@@ -1,0 +1,91 @@
+//Este código utiliza una imágen con los años como bandas ya filtrada por GAP
+//y elimina el efecto de sal y pimienta. Para lograrlo modifica el valor de
+//aquellos píxeles que no se encuentran conectados con más de 6 píxeles de la
+//misma clase y los cambia por la moda de los 6 píxeles conectadosque tiene 
+//al rededor.
+//
+//Entrada:
+//-class4GAP: La ruta del asset donde se encuentra la imagen filtrada por GAP
+//con los años como bandas de una única imagen que tiene todas las zonas.
+//-regioesCollection: El asset que tiene las zonas de la región a mapear
+//
+//Salida:
+//Una imagen con los años como bandas sin efecto sal y pimienta
+//
+//Variables a modificar
+//-col: entre comillas el número de colección.
+//-version: entre comillas la versión de la clasificación.
+//-years: los años mapeados en la imagen de input en formato 'AAi-AAf'
+//-dirout: Asset donde deseamos guardar la imagen sin efecto sal y pimienta
+//se recomienda usar una sola image collection para todos los filtros
+//
+//Al cambiar de colección es necesario modificar la variable 'anos'
+//Este script se puede usar también por zona sin hacer modificaciones, utilizando una imagen
+//que tenga únicamente la zona que se quiere filtrar y agregando algún indicativo
+// de zona en el nombre al exportar
+
+var version = '3'; 
+var col = '6'
+var years = '1985-2024'
+var col_arg = '2'
+
+
+
+//NO modificar
+// Col 5 v0 sin filtro
+
+var dirout = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + col_arg + '/GENERAL/CLASSIFICATION/FILTERS/CHACO/clasificaciones-filtradas/'
+
+var regioesCollection = ee.FeatureCollection("projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo")
+
+var versionIn = 'col'+ col + '-v' + version + '-gap-' + years + '-mosaic'
+var versionOut = 'col'+ col + '-v' + version + '-esp-' + years +  '-mosaic'
+
+var class4GAP =  ee.Image(dirout + versionIn);
+print(class4GAP)
+//var class4GAP = ee.Image('projects/mapbiomas-workspace/AMOSTRAS/col4/PAMPA/class_col4_filtros/'+ String(regiao) +'-RF85a18_v' + versionIn)
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+// print(palette)
+palette = palette.concat(["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#a2c830", "#000000", "#000000", "#000000","#000000","#000000", "#690a8f", "#8e9f53", "#ada48e", "#3b33ab"])
+
+//Visualizador de las clasificaciones
+var vis_class =  {
+      //'bands': ['classification_2016'],
+      'min': 0,
+      'max': 86,
+      'palette': palette,
+      'format': 'png'
+    }
+    
+Map.addLayer(class4GAP.select('classification_1999'), vis_class, 'Pre Filtro');
+
+var ano = '1986'
+var moda_00 = class4GAP.select('classification_' + ano).focal_mode(1, 'square', 'pixels')
+moda_00 = moda_00.mask(class4GAP.select('connect_'+ano).lte(6))
+var class_outTotal = class4GAP.select('classification_'+ano).blend(moda_00)
+
+var anos = ['1985','1986','1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998','1999', '2000', '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019', '2020', '2021', '2022', '2023', '2024']
+
+for (var i_ano=0;i_ano<anos.length; i_ano++){  
+  var ano = anos[i_ano]; 
+  var moda = class4GAP.select('classification_'+ano).focal_mode(1, 'square', 'pixels')
+  moda = moda.mask(class4GAP.select('connect_'+ano).lte(6))
+  var class_out = class4GAP.select('classification_'+ano).blend(moda)
+  class_outTotal = class_outTotal.addBands(class_out)
+}
+print(class_outTotal)
+
+Map.addLayer(class_outTotal.select('classification_1999'), vis_class, 'Pos Filtro');
+
+
+Export.image.toAsset({
+    'image': class_outTotal,
+    'description': versionOut,
+    'assetId': dirout + versionOut,
+    'pyramidingPolicy': {
+        '.default': 'mode'
+    },
+    'region': regioesCollection,
+    'scale': 30,
+    'maxPixels': 1e13
+});

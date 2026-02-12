@@ -1,0 +1,120 @@
+var version = '3'; 
+var col = '6'
+var years = '1985-2024'
+var col_arg = '2'
+
+var ano_vis = '2022'
+var clase_dif = 19
+//NO modificar
+// Col 5 v0 sin filtro
+
+var dirout = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + col_arg + '/GENERAL/CLASSIFICATION/FILTERS/CHACO/clasificaciones-filtradas/'
+
+var regioesCollection = ee.FeatureCollection("projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo")
+
+var versionIn = 'col'+ col + '-v' + version + '-tem-' + years + '-mosaic'
+var versionOut = 'col'+ col + '-v' + version + '-1Nat-' + years +  '-mosaic'
+
+
+
+//var regioesCollection = ee.FeatureCollection('projects/MapBiomas_Pampa/ANCILLARY_DATA/Zonas_Pampa_ARG_buffer10km_Zona4manual')
+var diferenca = require('users/schirmbeckj/PampaTriNacional:Utils/Passo100_Mapa_Diferencas_Classe_v02.js').diferenca
+
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+// print(palette)
+palette = palette.concat(["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#a2c830", "#000000", "#000000", "#000000","#000000","#000000", "#690a8f", "#8e9f53", "#ada48e", "#3b33ab"])
+
+//Visualizador de las clasificaciones
+var vis_class =  {
+      'bands': ['classification_' + ano_vis],
+      'min': 0,
+      'max': 86,
+      'palette': palette,
+      'format': 'png'
+    }
+var vischange = {"min": 0, "max": 3,
+        "palette": "ffffff,ff0000,e6f919,aaaaaa",    //amarelo=e6f919    magenta=bb34c0
+        "format": "png"
+  }
+
+var image_in =  ee.Image(dirout + versionIn);
+
+print(image_in)
+
+
+var mask5_1Nat = function(valor1, valor2, valor3, valor4, valor5, valor6, ano, imagem){
+  var mask = imagem.select('classification_'+ (parseInt(ano) - 2)).eq (valor1).or(imagem.select('classification_'+ (parseInt(ano) - 2)).eq(valor2))
+        .and((imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor1).or(imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor2))))
+        .and(imagem.select('classification_'+ (ano)).eq(valor3).or(imagem.select('classification_'+ (parseInt(ano) )).eq(valor4)).or(imagem.select('classification_'+ (parseInt(ano) + 1)).eq(valor5)).or(imagem.select('classification_'+ (parseInt(ano) + 1)).eq(valor6)))
+        .and(imagem.select('classification_'+ (parseInt(ano) + 1)).eq(valor1).or(imagem.select('classification_'+ (parseInt(ano) + 1)).eq(valor2)))
+        .and(imagem.select('classification_'+ (parseInt(ano) + 2)).eq (valor1).or(imagem.select('classification_'+ (parseInt(ano) + 2)).eq(valor2)))
+  var muda_img  = imagem.select('classification_'+ (ano)              ).mask(mask.eq(1)).where(mask.eq(1), valor2);  
+  var img_out = imagem.select('classification_'+ano).blend(muda_img)
+  return img_out;
+}
+var anos3 = ['1986','1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998', '1999', '2000', '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018', '2019','2020', '2021', '2022', '2023']
+
+//var anos3 = ['2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018', '2019','2020'];
+//var anos5 = ['2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018'];
+var anos5 = ['1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998', '1999', '2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018', '2019', '2020','2021']
+
+var window5years_1Nat = function(imagem, valor1, valor2, valor3, valor4, valor5, valor6){
+   var img_out = imagem.select('classification_1985')
+   var img_out = img_out.addBands(imagem.select('classification_1986'))
+
+   for (var i_ano=0;i_ano<anos5.length; i_ano++){  
+     var ano = anos5[i_ano];  
+     img_out = img_out.addBands(mask5_1Nat(valor1, valor2, valor3, valor4, valor5, valor6, ano, imagem)) }
+     img_out = img_out.addBands(imagem.select('classification_2022'))
+     img_out = img_out.addBands(imagem.select('classification_2023'))
+     img_out = img_out.addBands(imagem.select('classification_2024'))
+   return img_out
+}
+
+//put "classification_2018 in the end of bands after gap fill
+var original = image_in.select('classification_1985')
+for (var i_ano=0;i_ano<anos3.length; i_ano++){  
+  var ano = anos3[i_ano]; 
+  original = original.addBands(image_in.select('classification_'+ano)) 
+}
+original = original.addBands(image_in.select('classification_2024'))
+
+var filtered = original
+
+
+filtered = window5years_1Nat(filtered, 15, 19, 12, 3, 4, 11)
+
+filtered = window5years_1Nat(filtered, 15, 19, 77, 66, 6, 63)
+
+
+
+Map.addLayer(original, vis_class, 'original');
+
+Map.addLayer(filtered, vis_class, 'filtered');
+
+
+filtered = filtered.set('version', versionOut)
+
+
+//remap de las clases naturales para visualizar la diferencia
+var img_antes  = original.select('classification_'+ ano_vis).remap([3,4,6,11,12,63,66,77], [1, 1, 1, 1, 1, 1, 1, 1])
+var img_depois = filtered.select('classification_'+ ano_vis).remap([3,4,6,11,12,63,66,77], [1, 1, 1, 1, 1, 1, 1, 1])
+
+
+//gera mapa de diferença
+var img_dif = diferenca(img_antes,img_depois,1)//.clip(limite)
+
+Map.addLayer(img_dif.clip(regioesCollection),vischange,'Diferencia clase ' + String(clase_dif) + ' ' + ano_vis, false)
+
+Export.image.toAsset({
+    'image': filtered,
+    'description': versionOut,
+    'assetId': dirout + versionOut,
+    'pyramidingPolicy': {
+        '.default': 'mode'
+    },
+    'region': regioesCollection,
+    'scale': 30,
+    'maxPixels': 1e13
+});
+

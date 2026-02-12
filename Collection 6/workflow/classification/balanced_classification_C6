@@ -1,0 +1,1227 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var errores = /* color: #d63000 */ee.Geometry.Point([-49.09637332539229, -29.63702859279615]),
+    region = ee.FeatureCollection("projects/mapbiomas-chaco/COLECCION-3/Limite/Limite_Chaco_col3"),
+    C003_Bosque_Cerrado = /* color: #1f8d49 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-49.13091607882835, -29.617273786470346]),
+            {
+              "reference": 3,
+              "system:index": "0"
+            })]),
+    C004_Bosque_Abierto = /* color: #7dc975 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-41.21811500733122, -22.6747139537469]),
+            {
+              "reference": 4,
+              "system:index": "0"
+            })]),
+    C006_Bosque_Inundable = /* color: #026975 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-41.21811500733122, -22.6747139537469]),
+            {
+              "reference": 6,
+              "system:index": "0"
+            })]),
+    C009_Silvicultura = /* color: #7a5900 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-41.21811500733122, -22.6747139537469]),
+            {
+              "reference": 9,
+              "system:index": "0"
+            })]),
+    C011_PZ_Inundable = /* color: #519799 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-41.49203568185339, -22.539891141921643]),
+            {
+              "reference": 11,
+              "system:index": "0"
+            })]),
+    C012_Pastizal = /* color: #d6bc74 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-41.21811500733122, -22.6747139537469]),
+            {
+              "reference": 12,
+              "system:index": "0"
+            })]),
+    C015_Pastura = /* color: #edde8e */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-41.21811500733122, -22.6747139537469]),
+            {
+              "reference": 15,
+              "system:index": "0"
+            })]),
+    C019_Cultivos_Temporarios = /* color: #c27ba0 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-49.0958791544041, -29.54493551570798]),
+            {
+              "reference": 19,
+              "system:index": "0"
+            })]),
+    C025_Otras_Areas_No_Veg = /* color: #db4d4f */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-49.042470016640586, -29.644865727004603]),
+            {
+              "reference": 25,
+              "system:index": "0"
+            })]),
+    C033_Rios_lagos_lagunas_oceanos = /* color: #2532e4 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-126.66484375, 42.19436782175827]),
+            {
+              "reference": 33,
+              "system:index": "0"
+            })]),
+    C063_Mos_Arbustos_Herbaceas = /* color: #ebf8b5 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-41.21811500733122, -22.6747139537469]),
+            {
+              "reference": 63,
+              "system:index": "0"
+            })]),
+    C066_M_Arbustal_Cerrado = /* color: #a89358 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-48.91324530890816, -29.48979872829669]),
+            {
+              "reference": 66,
+              "system:index": "0"
+            })]),
+    C077_M_Arbustal_Abierto = /* color: #a2c830 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-48.82535468390816, -29.48979872829669]),
+            {
+              "reference": 77,
+              "system:index": "0"
+            })]),
+    sacar_muestras = /* color: #d63000 */ee.Geometry.MultiPoint(),
+    C023_Playas_y_Dunas = /* color: #ffa07a */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-48.984020010502135, -29.654555747368875]),
+            {
+              "reference": 23,
+              "system:index": "0"
+            })]),
+    C061_Salares = /* color: #f5d5d5 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-48.984020010502135, -29.463427129769315]),
+            {
+              "reference": 61,
+              "system:index": "0"
+            })]),
+    C047_Citrus = /* color: #9932cc */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-48.632457510502135, -29.539921961607632]),
+            {
+              "reference": 47,
+              "system:index": "0"
+            })]),
+    C048_O_Cult_Perennes = /* color: #e6ccff */ee.FeatureCollection([]),
+    C083_Vid = /* color: #690a8f */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-49.071910635502135, -29.348575482780703]),
+            {
+              "reference": 83,
+              "system:index": "0"
+            })]),
+    C084_Olivos = /* color: #8e9f53 */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-48.896129385502135, -29.578147696669568]),
+            {
+              "reference": 84,
+              "system:index": "0"
+            })]),
+    C085_Nogales = /* color: #ada48e */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-49.071910635502135, -30.073761385584532]),
+            {
+              "reference": 84,
+              "system:index": "0"
+            })]),
+    C086_Arandanos = /* color: #3b33ab */ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([-48.632457510502135, -29.539921961607632]),
+            {
+              "reference": 86,
+              "system:index": "0"
+            })]);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+/** 
+ * Clasificación Colección 5.0 MapBiomas Chaco
+ * 
+ * Codigos recopilados por Sarrailhé Sofia 
+ * de Banchero Santiago, Schirmbreckj Juliano, Sarrailhé Sofia y Suklje Marisa
+ * 
+ * 
+ *  CZ: Con Zonificación
+ * 
+ *  INPUTS: 
+ *    - Mosaicos Landsat
+ *    - Muestras estables colección 4
+ *    - Zonas colección Sentinel
+ *    - Colección 4 para ver diferencias
+ *    - Script de obtener leyenda
+ *    - Script de Mapa de Diferencias
+ *  
+ * OUTPUT:
+ *    -Clasificaciones anuales por zona, según el periodo de años y la zona utilizada
+ *    -Número de de muestras utilizadas para clasificar por clase por zona y por año
+ * 
+ * 
+ * PARA UTILIZAR EL SCIRPT
+ * Las lineas a modificar son de la 30 a la 77 
+ * y de la 384 a 404
+ * 
+ * 
+ * */
+
+var bioma = 'CHACO';
+var col = 6
+//Cada script debe utilizarse para una unica zona
+// Guardar una copia por zona
+var id_zona = 11  // Identificador de Zona. Siempre entre comillas
+/**
+ * Numeros de zonas disponibles por país
+ * ARG: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+ */
+var version_clasificacion = '0' //Entre comillas, permite tener diferentes versiones
+
+var nSamplesMin = 100;//número de muestras minimo =5% de las 2000 muestras de la classe en la zona
+var nSamplesMax = 2000;//número máximo de muestras (no hay tantas muestras disponibles para todas las clases)
+
+//Cambiar los años de inicio y fin una sola vez. Si se desea establecer un nuevo periodo
+// guardar un script nuevo y ahí modificar estas variables
+var year_inicio = 1985 //Año en el cual se desea comenzar a clasificar
+var year_fin = 2024 // Año en el cual se desea terminar de clasificar
+
+
+// ****** POR FAVOR LEER LOS SIGUIENTES COMENTARIOS ********
+
+
+//A continuación hay varias herramientas que pueden decidirse si ejecutarlas o no
+//si ejecuta todas las herramientas al mismo tiempo el script será mas lento
+//En todos los casos se utliliza el valor 1 para que se calcule y 0 para que no se calcule
+
+var calcula_area = 0 //Calcular o no (1 o 0) el área por clase en consola para un año espécífico
+var year_calcula_area = '1985' //Año para el cuál se desea calcular el área
+
+var clase_diferencia = 3 // Clase para la cuál desea ver el mapa de diferencias con la colección anterior
+// Recordar que sólo se calcula para los años disponibles en la colección anterior
+//En el mapa se verá: Rojo: área de la clase elegida presente en la colección anterior y en esta no está (se perdió)
+//                    Amarillo: área que no estaba en la colección anterior y ahora sí (se agregó)
+//                    Gris: área que es igual para dicha clase en ambas colecciones
+
+
+var cant_muestras = 0 //Si es 1 calcula la cantidad de muestras por clase por año utilizadas para clasificar en la consola
+
+var nro_arboles = 100 //Numero de arboles que utiliza el Random Forest
+                      // utilizar al menos 50
+
+var mosaico_con_huecos = 0 //Si desea agregar muestras complementarias y
+                           //evitar los problemas de huecos de mosaico
+                           //colocar un numero 1 y agregar una muestra complementaria estable en el lugar desado
+                           //Si no tiene muestras complementarias en huecos de mosaico dará error
+
+var ver_muestras = 0 // Colocar un 1 si se desea ver en el mapa las muestras utilizadas para clasificar por año
+
+var calcula_exactitud = 0 //Colocar un 1 si se desea ver la exactitud en la consola
+var conf_mat = 0 //Colocar un 1 si se desea ver la matriz de confusión en la consola
+var year_exactitud = 2000 // Colocar el año para el cual se desea ver la 
+                            // exactitud y la matriz de confusion
+
+
+
+//A PARTIR DE ACA NO TOCAR
+
+
+if (bioma == 'CHACO' ) {
+  //Version de los mosaicos
+  var version_mosaico = "2"
+  //Versión de las muestras estables
+  var version_muestras = '4'
+  //Asset de las muestras estables
+  var dirsaples = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-2/GENERAL/SAMPLES/STABLE/CHACO/Outliers/muestras_v' + version_muestras 
+  //Shape con zonas
+  var zonas = ee.FeatureCollection('projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo')
+  //Raster con zonas
+  var zonas_ras = ('projects/mapbiomas-chaco/SENTINEL/Limites/ic-zonas-raster')
+  
+  //csv con datos de balanceo calculado en R
+  var balanceo = ee.FeatureCollection("projects/mapbiomas-chaco/SENTINEL/db-balance-coef3")
+ 
+  // Donde se guardan las clasificaciones HAY QUE HACER UN ASSET NUEVO!!
+  var output = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-2/GENERAL/CLASSIFICATION/PRECLASSIFICATION/CHACO/classifications-init/'
+  var id_zona_prop = 'zona'
+  
+    //var limite = ee.Feature(zonas.filter(ee.Filter.eq(id_zona_prop , id_zona)).first()).geometry()
+  var myRegion = zonas.filterMetadata(id_zona_prop , 'equals', id_zona)
+  var limite = ee.ImageCollection(zonas_ras).filterMetadata(id_zona_prop , 'equals', id_zona).max()
+  var drive_nro_muestras = 'Muestras por version y clase Chaco Col6'
+}
+//print(limite)
+
+// Serie de tiempo
+var ts = require('users/santiagobanchero/plots:plots.js')
+
+// Atributo target en el feature space de entrenamiento
+var target = 'reference';
+
+//Script de Juliano que calcula las diferencias
+var diferenca = require('users/schirmbeckj/PampaTriNacional:Utils/Passo100_Mapa_Diferencas_Classe_v02.js').diferenca
+
+var utils = require('users/MapBiomasAR/coleccion-6:Utils/getlegend_Chaco_c6')
+var legend = require('users/MapBiomasAR/coleccion-6:Utils/legend_Chaco_c6').legend
+
+// mosaicos
+var mosaics =  ee.ImageCollection("projects/nexgenmap/MapBiomas2/LANDSAT/CHACO/mosaics")
+                 .filterMetadata('version', 'equals', version_mosaico)
+
+//nombres de las bandas
+{var bandNames = ee.List([
+'evi2_amp',
+'gv_amp',
+'ndfi_amp',
+'ndvi_amp',
+'ndwi_amp',
+'soil_amp',
+'wefi_amp',
+'blue_median',
+'blue_median_dry',
+'blue_median_wet',
+'cai_median',
+'cai_median_dry',
+'cloud_median',
+'evi2_median',
+'evi2_median_dry',
+'evi2_median_wet',
+'gcvi_median',
+'gcvi_median_dry',
+'gcvi_median_wet',
+'green_median',
+'green_median_dry',
+'green_median_wet',
+'green_median_texture',
+'gv_median',
+'gvs_median',
+'gvs_median_dry',
+'gvs_median_wet',
+'hallcover_median',
+'latitude', //calculada no script
+'longitude', //calculada no script
+'ndfi_median',
+'ndfi_median_dry',
+'ndfi_median_wet',
+'ndvi_median',
+'ndvi_median_dry',
+'ndvi_median_wet',
+//'ndvi_amp_3y', //calculada no script
+'ndwi_median',
+'ndwi_median_dry',
+'ndwi_median_wet',
+'nir_median',
+'nir_median_dry',
+'nir_median_wet',
+'npv_median',
+'pri_median',
+'pri_median_dry',
+'pri_median_wet',
+'red_median',
+'red_median_dry',
+'red_median_wet',
+'savi_median',
+'savi_median_dry',
+'savi_median_wet',
+'sefi_median',
+'sefi_median_dry',
+'shade_median',
+'soil_median',
+'swir1_median',
+'swir1_median_dry',
+'swir1_median_wet',
+'swir2_median',
+'swir2_median_dry',
+'swir2_median_wet',
+'wefi_median',
+'wefi_median_wet',
+'blue_min',
+'green_min',
+'nir_min',
+'red_min',
+'swir1_min',
+'swir2_min',
+'blue_stdDev',
+'cai_stdDev',
+'cloud_stdDev',
+'evi2_stdDev',
+'gcvi_stdDev',
+'green_stdDev',
+'gv_stdDev',
+'gvs_stdDev',
+'hallcover_stdDev',
+'ndfi_stdDev',
+'ndvi_stdDev',
+'ndwi_stdDev',
+'nir_stdDev',
+'red_stdDev',
+'savi_stdDev',
+'sefi_stdDev',
+'shade_stdDev',
+'soil_stdDev',
+'swir1_stdDev',
+'swir2_stdDev',
+'wefi_stdDev',
+'slope'
+]);
+
+
+var bandNamesShort = ee.List([
+'evi2_a',
+'gv_a',
+'ndfi_a',
+'ndvi_a',
+'ndwi_a',
+'soil_a',
+'wefi_a',
+'blue_m',
+'blue_m_d',
+'blue_m_w',
+'cai_m',
+'cai_m_d',
+'cloud_m',
+'evi2_m',
+'evi2_m_d',
+'evi2_m_w',
+'gcvi_m',
+'gcvi_m_d',
+'gcvi_m_w',
+'green_m',
+'green_m_d',
+'green_m_w',
+'green_m_t',
+'gv_m',
+'gvs_m',
+'gvs_m_d',
+'gvs_m_w',
+'hallcov_m',
+'lat', //calculada no script
+'long', //calculada no script
+'ndfi_m',
+'ndfi_m_d',
+'ndfi_m_w',
+'ndvi_m',
+'ndvi_m_d',
+'ndvi_m_w',
+//'ndvi_a_3y', //calculada no script
+'ndwi_m',
+'ndwi_m_d',
+'ndwi_m_w',
+'nir_m',
+'nir_m_d',
+'nir_m_w',
+'npv_m',
+'pri_m',
+'pri_m_d',
+'pri_m_w',
+'red_m',
+'red_m_d',
+'red_m_w',
+'savi_m',
+'savi_m_d',
+'savi_m_w',
+'sefi_m',
+'sefi_m_d',
+'shade_m',
+'soil_m',
+'swir1_m',
+'swir1_m_d',
+'swir1_m_w',
+'swir2_m',
+'swir2_m_d',
+'swir2_m_w',
+'wefi_m',
+'wefi_m_w',
+'blue_min',
+'green_min',
+'nir_min',
+'red_min',
+'swir1_min',
+'swir2_min',
+'blue_sD',
+'cai_sD',
+'cloud_sD',
+'evi2_sD',
+'gcvi_sD',
+'green_sD',
+'gv_sD',
+'gvs_sD',
+'hallcov_sD',
+'ndfi_sD',
+'ndvi_sD',
+'ndwi_sD',
+'nir_sD',
+'red_sD',
+'savi_sD',
+'sefi_sD',
+'shade_sD',
+'soil_sD',
+'swir1_sD',
+'swir2_sD',
+'wefi_sD',
+'slope'
+])}
+//print(mosaics)
+
+// Estilos & Visualización
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+// print(palette)
+palette = palette.concat(["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#a2c830", "#000000", "#000000", "#000000","#000000","#000000", "#690a8f", "#8e9f53", "#ada48e", "#3b33ab"])
+// Lista de nuevas ciudades
+//var nuevosColores = ee.List(['ffffff', 'ffffff', 'ffffff', 'ffffff', 'ffffff', 'ffffff', 'ffffff', 'ffffff', ]);
+print(palette)
+
+// Obtener la lista existente
+//var listaExistente = diccionario.get('argentina1');
+
+// Combinar las listas
+//var listaActualizada = ee.List(listaExistente).cat(nuevasCiudades);
+
+// Crear un nuevo diccionario con la lista actualizada
+//var nuevoDiccionario = diccionario.set('argentina1', listaActualizada);
+
+
+
+var vis_class = {'bands': ['classification_1985'], 'min': 0, 'max': 86,  'palette': palette, 'format': 'png'};
+//Visualizador de las diferencias
+var vischange = {'min': 0, 'max': 3,
+        'palette': 'ffffff,ff0000,e6f919,aaaaaa',    //amarelo=e6f919    magenta=bb34c0
+        'format': 'png'
+  }
+  
+//Visualizador de los mosaicos
+var RGBvis = {
+        bands: ['swir1_median', 'nir_median', 'red_median'],
+        gain: [0.08, 0.06, 0.2],
+        gamma: 0.85
+    };
+
+// COMPLEMENTARIAS: Acá se realiza la unión de las complementarias
+var complementarias = C003_Bosque_Cerrado
+                        .merge(C004_Bosque_Abierto)
+                        .merge(C006_Bosque_Inundable)
+                        .merge(C009_Silvicultura)
+                        .merge(C011_PZ_Inundable)
+                        .merge(C012_Pastizal)
+                        .merge(C015_Pastura)
+                        .merge(C019_Cultivos_Temporarios)
+                        .merge(C023_Playas_y_Dunas)
+                        .merge(C025_Otras_Areas_No_Veg)
+                        .merge(C033_Rios_lagos_lagunas_oceanos)
+                     //   .merge(C036_Cultivos_Perennes)
+                        .merge(C047_Citrus)
+                        .merge(C048_O_Cult_Perennes)
+                        .merge(C061_Salares)
+                        .merge(C063_Mos_Arbustos_Herbaceas)
+                        .merge(C066_M_Arbustal_Cerrado)
+                        .merge(C077_M_Arbustal_Abierto)
+                        .merge(C083_Vid)
+                        .merge(C084_Olivos)
+                        .merge(C085_Nogales)
+                        .merge(C086_Arandanos)
+                        .filter(ee.Filter.bounds(myRegion)); // Se filtra por el limite con buffer.
+                                               // Por defoult cada uno tiene una muestra en
+                                               // la coordenada [0,0] para que no se borre la 
+                                               // propiedad clase
+        
+//print(complementarias, 'complementarias 1')
+var clasificacion_completa = null // Es la imagen donde se guardan todas las clasificaciones
+var tabla_output = null
+var muestras_usadas = null
+
+
+
+// BUCLE PRINCIPAL POR AÑOS: INICIO
+var years = ee.List.sequence(year_inicio, year_fin,1).getInfo();
+years.map(function(year){
+
+//Balanceo de muestras por año y clase siguiendo metodología Pampa Brasil
+// ejemplo de como completar cada una: percent_Flo = b0    + desvio + year *  b1
+// Los desvios pueden modificarse desde aprox la linea 380 a 399
+// Para modificarlos hay que tener en cuenta que se modifican en porcentaje para 
+//todos los años que se incluyen en el script
+// Si no posee alguna clase, dejarla tal y como esta, se seleccionan en otro paso
+// El ajuste del balanceo se realiza por clase, debajo encontraran cada clase por número.
+  var balance = {
+  
+    desvio: {
+      c3  : 0, 
+      c4  : 0,
+      c6  : 0,
+      c9  : 0,
+      c11 : 0,
+      c12 : 0,
+      c15 : 0,
+      c19 : 0,
+      c23 : 0,
+      c25 : 0,
+      c33 : 0,
+    //  c36 : 0,
+      c47 : 0,
+      c48 : 0,
+      c61 : 0,
+      c63 : 0,
+      c66 : 0,
+      c77 : 0,
+      c83 : 0,
+      c84 : 0,
+      c85 : 0,
+      c86 : 0,
+
+     },
+    
+    db: balanceo,
+    
+    get_b1: function(id, zone){
+      return balance.db.filter(ee.Filter.and(ee.Filter.eq("id_clase", id), ee.Filter.eq("regiao", zone))).first().getNumber("b1")
+    },
+    
+    get_b0: function(id, zone){
+      return balance.db.filter(ee.Filter.and(ee.Filter.eq("id_clase", id), ee.Filter.eq("regiao", zone))).first().getNumber("bo")
+    },
+    
+    get_percent: function(id, idc, zone, year){
+        
+        return (balance.get_b0(id, zone)).add( ee.Number(idc) ).add( (ee.Number(year)).multiply(balance.get_b1(id, zone)) );    
+    }
+  }
+
+  if (year < 2024){
+    var percent_03 = balance.get_percent(3 , balance.desvio.c3 ,id_zona, year)
+    var percent_04 = balance.get_percent(4 , balance.desvio.c4 ,id_zona, year)
+    var percent_06 = balance.get_percent(6 , balance.desvio.c6 ,id_zona, year)
+    var percent_09 = balance.get_percent(9 , balance.desvio.c9 ,id_zona, year)
+    var percent_11 = balance.get_percent(11, balance.desvio.c11,id_zona, year)
+    var percent_12 = balance.get_percent(45, balance.desvio.c12,id_zona, year)
+    var percent_15 = balance.get_percent(15, balance.desvio.c15,id_zona, year)
+    var percent_19 = balance.get_percent(19, balance.desvio.c19,id_zona, year)
+    var percent_23 = 10
+    var percent_25 = balance.get_percent(22, balance.desvio.c25,id_zona, year)
+    var percent_33 = balance.get_percent(26, balance.desvio.c33,id_zona, year)
+  //  var percent_36 = balance.get_percent(36, balance.desvio.c36,id_zona, year)
+    var percent_47 = 10
+    var percent_48 = 10
+    var percent_61 = 10
+    var percent_63 = balance.get_percent(45, balance.desvio.c63,id_zona, year)
+    var percent_66 = balance.get_percent(3,  balance.desvio.c66,id_zona, year)
+    var percent_77 = balance.get_percent(4,  balance.desvio.c77,id_zona, year)
+    var percent_83 = 10
+    var percent_84 = 10
+    var percent_85 = 10
+    var percent_86 = 10
+  }
+  
+  if (year == 2024){
+    var percent_03 = balance.get_percent(3 , balance.desvio.c3 ,id_zona, 2023)
+    var percent_04 = balance.get_percent(4 , balance.desvio.c4 ,id_zona, 2023)
+    var percent_06 = balance.get_percent(6 , balance.desvio.c6 ,id_zona, 2023)
+    var percent_09 = balance.get_percent(9 , balance.desvio.c9 ,id_zona, 2023)
+    var percent_11 = balance.get_percent(11, balance.desvio.c11,id_zona, 2023)
+    var percent_12 = balance.get_percent(45, balance.desvio.c12,id_zona, 2023)
+    var percent_15 = balance.get_percent(15, balance.desvio.c15,id_zona, 2023)
+    var percent_19 = balance.get_percent(19, balance.desvio.c19,id_zona, 2023)
+    var percent_23 = 10
+    var percent_25 = balance.get_percent(22, balance.desvio.c25,id_zona, 2023)
+    var percent_33 = balance.get_percent(26, balance.desvio.c33,id_zona, 2023)
+    var percent_47 = 10
+    var percent_48 = 10
+ //   var percent_36 = balance.get_percent(36, balance.desvio.c36,id_zona, 2023)
+    var percent_61 = 10
+    var percent_63 = balance.get_percent(45, balance.desvio.c63,id_zona, 2023)
+    var percent_66 = balance.get_percent(3,  balance.desvio.c66,id_zona, 2023)
+    var percent_77 = balance.get_percent(4,  balance.desvio.c77,id_zona, 2023)
+    var percent_83 = 10
+    var percent_84 = 10
+    var percent_85 = 10
+    var percent_86 = 10
+
+  }
+
+  var n_amostas = ee.Feature(ee.Geometry.Point([0, 0]))
+  var n_amostas2 = ee.Feature(ee.Geometry.Point([0, 0]))
+
+  var balanced = ee.FeatureCollection(dirsaples + '_' + year + '-scores').filter(ee.Filter.eq('zona', id_zona))
+  var balanced = balanced.filter(ee.Filter.notNull(balanced.first().propertyNames()))
+//print(balanced.limit(10), 'balanced')
+  //id_zona_prop = "regiao"                                
+  var SS_03 = balanced.filterMetadata('reference', 'equals', 3 ).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_04 = balanced.filterMetadata('reference', 'equals', 4 ).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_06 = balanced.filterMetadata('reference', 'equals', 6 ).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_09 = balanced.filterMetadata('reference', 'equals', 9 ).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_11 = balanced.filterMetadata('reference', 'equals', 11).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_12 = balanced.filterMetadata('reference', 'equals', 12).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_15 = balanced.filterMetadata('reference', 'equals', 15).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_19 = balanced.filterMetadata('reference', 'equals', 19).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_25 = balanced.filterMetadata('reference', 'equals', 25).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_23 = balanced.filterMetadata('reference', 'equals', 23).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_33 = balanced.filterMetadata('reference', 'equals', 33).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_47 = balanced.filterMetadata('reference', 'equals', 47).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_48 = balanced.filterMetadata('reference', 'equals', 48).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+//  var SS_36 = balanced.filterMetadata('reference', 'equals', 36).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_61 = balanced.filterMetadata('reference', 'equals', 61).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_63 = balanced.filterMetadata('reference', 'equals', 63).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_66 = balanced.filterMetadata('reference', 'equals', 66).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_77 = balanced.filterMetadata('reference', 'equals', 77).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_83 = balanced.filterMetadata('reference', 'equals', 83).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_84 = balanced.filterMetadata('reference', 'equals', 84).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_85 = balanced.filterMetadata('reference', 'equals', 85).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+  var SS_86 = balanced.filterMetadata('reference', 'equals', 86).filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.gt("score",-0.5)) //.filterBounds(limite)
+
+  var n_samples_03 = ee.Number(ee.Number(nSamplesMax).multiply(percent_03).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_04 = ee.Number(ee.Number(nSamplesMax).multiply(percent_04).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_06 = ee.Number(ee.Number(nSamplesMax).multiply(percent_06).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_09 = ee.Number(ee.Number(nSamplesMax).multiply(percent_09).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_11 = ee.Number(ee.Number(nSamplesMax).multiply(percent_11).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_12 = ee.Number(ee.Number(nSamplesMax).multiply(percent_12).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_15 = ee.Number(ee.Number(nSamplesMax).multiply(percent_15).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_19 = ee.Number(ee.Number(nSamplesMax).multiply(percent_19).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_25 = ee.Number(ee.Number(nSamplesMax).multiply(percent_25).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_23 = ee.Number(ee.Number(nSamplesMax).multiply(percent_23).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_33 = ee.Number(ee.Number(nSamplesMax).multiply(percent_33).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_47 = ee.Number(ee.Number(nSamplesMax).multiply(percent_47).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_48 = ee.Number(ee.Number(nSamplesMax).multiply(percent_48).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+//  var n_samples_36 = ee.Number(ee.Number(nSamplesMax).multiply(percent_36).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_61 = ee.Number(ee.Number(nSamplesMax).multiply(percent_61).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_63 = ee.Number(ee.Number(nSamplesMax).multiply(percent_63).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_66 = ee.Number(ee.Number(nSamplesMax).multiply(percent_66).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_77 = ee.Number(ee.Number(nSamplesMax).multiply(percent_77).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_83 = ee.Number(ee.Number(nSamplesMax).multiply(percent_83).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_84 = ee.Number(ee.Number(nSamplesMax).multiply(percent_84).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_85 = ee.Number(ee.Number(nSamplesMax).multiply(percent_85).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+  var n_samples_86 = ee.Number(ee.Number(nSamplesMax).multiply(percent_86).divide(100)).round().int16().max(nSamplesMin).min(nSamplesMax)
+
+
+  var SS_03_samples = SS_03.randomColumn().sort('random').limit(n_samples_03);
+  var SS_04_samples = SS_04.randomColumn().sort('random').limit(n_samples_04);
+  var SS_06_samples = SS_06.randomColumn().sort('random').limit(n_samples_06);
+  var SS_09_samples = SS_09.randomColumn().sort('random').limit(n_samples_09);
+  var SS_11_samples = SS_11.randomColumn().sort('random').limit(n_samples_11);
+  var SS_12_samples = SS_12.randomColumn().sort('random').limit(n_samples_12);
+  var SS_15_samples = SS_15.randomColumn().sort('random').limit(n_samples_15);
+  var SS_19_samples = SS_19.randomColumn().sort('random').limit(n_samples_19);
+  var SS_25_samples = SS_25.randomColumn().sort('random').limit(n_samples_25);
+  var SS_23_samples = SS_23.randomColumn().sort('random').limit(n_samples_23);
+  var SS_33_samples = SS_33.randomColumn().sort('random').limit(n_samples_33);
+  var SS_47_samples = SS_47.randomColumn().sort('random').limit(n_samples_47);
+  var SS_48_samples = SS_48.randomColumn().sort('random').limit(n_samples_48);
+//  var SS_36_samples = SS_36.randomColumn().sort('random').limit(n_samples_36);
+  var SS_61_samples = SS_61.randomColumn().sort('random').limit(n_samples_61);
+  var SS_63_samples = SS_63.randomColumn().sort('random').limit(n_samples_63);
+  var SS_66_samples = SS_66.randomColumn().sort('random').limit(n_samples_66);
+  var SS_77_samples = SS_77.randomColumn().sort('random').limit(n_samples_77);
+  var SS_83_samples = SS_83.randomColumn().sort('random').limit(n_samples_83);
+  var SS_84_samples = SS_84.randomColumn().sort('random').limit(n_samples_84);
+  var SS_85_samples = SS_85.randomColumn().sort('random').limit(n_samples_85);
+  var SS_86_samples = SS_86.randomColumn().sort('random').limit(n_samples_86);
+
+  
+  //print("BAL BANCH", SS_03_samples)
+  
+  //crea una variable con todas las muestras estables, diferenciando las clases por pais
+    var balanced = SS_03_samples
+            .merge(SS_04_samples)
+            .merge(SS_06_samples)
+            .merge(SS_09_samples)
+            .merge(SS_11_samples)
+            .merge(SS_12_samples)
+            .merge(SS_15_samples)            
+            .merge(SS_19_samples)
+            .merge(SS_25_samples)
+            .merge(SS_23_samples)
+            .merge(SS_33_samples)
+            .merge(SS_47_samples)
+            .merge(SS_48_samples)
+        //    .merge(SS_36_samples)
+            .merge(SS_61_samples)
+            .merge(SS_63_samples)
+            .merge(SS_66_samples)
+            .merge(SS_77_samples)
+            .merge(SS_83_samples)
+            .merge(SS_84_samples)
+            .merge(SS_85_samples)
+            .merge(SS_86_samples)
+           
+//print(balanced.limit(10), 'balanced2')
+
+  //Se sacan las muestras con error de todas las clases, usando los polígonos 
+  //generados en el geometry sacar_muestras
+  var balanced = balanced.filter(ee.Filter.eq(id_zona_prop, id_zona)).filter(ee.Filter.bounds(sacar_muestras).not())
+
+
+
+    n_amostas = n_amostas.set(String(year),[
+      SS_03_samples.size().subtract(n_samples_03),
+      SS_04_samples.size().subtract(n_samples_04),
+      SS_06_samples.size().subtract(n_samples_06),      
+      SS_09_samples.size().subtract(n_samples_09),
+      SS_11_samples.size().subtract(n_samples_11),
+      SS_12_samples.size().subtract(n_samples_12),
+      SS_15_samples.size().subtract(n_samples_15),
+      SS_19_samples.size().subtract(n_samples_19),
+      SS_25_samples.size().subtract(n_samples_25),
+      SS_23_samples.size().subtract(n_samples_23),
+      SS_33_samples.size().subtract(n_samples_33),
+      SS_47_samples.size().subtract(n_samples_47),
+      SS_48_samples.size().subtract(n_samples_48),
+   //   SS_36_samples.size().subtract(n_samples_36),
+      SS_61_samples.size().subtract(n_samples_61),
+      SS_63_samples.size().subtract(n_samples_63),
+      SS_66_samples.size().subtract(n_samples_66),
+      SS_77_samples.size().subtract(n_samples_77),
+      SS_83_samples.size().subtract(n_samples_83),
+      SS_84_samples.size().subtract(n_samples_84),
+      SS_85_samples.size().subtract(n_samples_85),
+      SS_86_samples.size().subtract(n_samples_86),
+
+  ])
+
+      
+  var input_mosaic = mosaics.filterMetadata('year', 'equals', year)
+                        //  .filterBounds(limite)
+                            .mosaic()
+    
+  var ll = ee.Image.pixelLonLat().clip(myRegion)
+  var long = ll.select('longitude').add(0).multiply(-1).multiply(100).toInt16()
+  var lati = ll.select('latitude').add(0).multiply(-1).multiply(100).toInt16()
+  
+  input_mosaic = input_mosaic.addBands(long.rename('longitude'))
+  input_mosaic = input_mosaic.addBands(lati.rename('latitude' ))    
+ // input_mosaic = input_mosaic.addBands(ee.List(year), 'year')
+  
+  
+  input_mosaic = input_mosaic.select(bandNames,bandNamesShort)
+  // Genera 'on the fly' el feature space de las complementarias para un año dado.
+  var features_space_complementarias = function(fc, year){
+    return input_mosaic.reduceRegions({
+        collection: ee.FeatureCollection(fc), 
+        reducer: ee.Reducer.first().forEach(input_mosaic.bandNames()), 
+        scale: 30, 
+        tileScale: 4})
+        .map(function(f){return f.set('year', year)})
+  }
+   
+  complementarias = features_space_complementarias(complementarias, year);
+  var complementariasNoNulls = complementarias.filter(ee.Filter.notNull(complementarias.first().propertyNames()));   
+// print(balanced.limit(10), 'balanced')
+  
+  var train = balanced
+  if (mosaico_con_huecos == 1){
+     train = train.merge(complementariasNoNulls)
+   }
+  if (mosaico_con_huecos == 0){
+     train = train.merge(complementarias)
+   }
+    //print(train.limit(100))
+// print(train.limit(10), 'train')
+// print(complementarias, 'complementarias')
+
+  var SS_03_2 = train.filterMetadata('reference', 'equals', 3)
+  var SS_04_2 = train.filterMetadata('reference', 'equals', 4)
+  var SS_06_2 = train.filterMetadata('reference', 'equals', 6)
+  var SS_09_2 = train.filterMetadata('reference', 'equals', 9)
+  var SS_11_2 = train.filterMetadata('reference', 'equals', 11)
+  var SS_12_2 = train.filterMetadata('reference', 'equals', 12)
+  var SS_15_2 = train.filterMetadata('reference', 'equals', 15)
+  var SS_19_2 = train.filterMetadata('reference', 'equals', 19)
+  var SS_25_2 = train.filterMetadata('reference', 'equals', 25)
+  var SS_23_2 = train.filterMetadata('reference', 'equals', 23)
+  var SS_33_2 = train.filterMetadata('reference', 'equals', 33)
+  var SS_47_2 = train.filterMetadata('reference', 'equals', 47)
+  var SS_48_2 = train.filterMetadata('reference', 'equals', 48)
+//  var SS_36_2 = train.filterMetadata('reference', 'equals', 36)
+  var SS_61_2 = train.filterMetadata('reference', 'equals', 61)
+  var SS_63_2 = train.filterMetadata('reference', 'equals', 63)
+  var SS_66_2 = train.filterMetadata('reference', 'equals', 66)
+  var SS_77_2 = train.filterMetadata('reference', 'equals', 77)
+  var SS_83_2 = train.filterMetadata('reference', 'equals', 83)
+  var SS_84_2 = train.filterMetadata('reference', 'equals', 84)
+  var SS_85_2 = train.filterMetadata('reference', 'equals', 85)
+  var SS_86_2 = train.filterMetadata('reference', 'equals', 86)
+
+  var dict = ee.Dictionary();
+
+  if (bioma == 'CHACO'){
+    dict = dict.set('03-BC',       SS_03_2.size());
+    dict = dict.set('04-BA',       SS_04_2.size());
+    dict = dict.set('06-BI',       SS_06_2.size());
+    dict = dict.set('09-Silvi',    SS_09_2.size());
+    dict = dict.set('47-Citrus',   SS_47_2.size());
+    dict = dict.set('48-OCulPer',  SS_48_2.size());
+    dict = dict.set('83-Vid',      SS_83_2.size());
+    dict = dict.set('84-Olivos',   SS_84_2.size());
+    dict = dict.set('85-Nogales',  SS_85_2.size());
+    dict = dict.set('86-Arand',    SS_86_2.size());
+    dict = dict.set('19-CulAn',    SS_19_2.size());
+//    dict = dict.set('36-CulPer',   SS_36_2.size());
+    dict = dict.set('15-PASTU',    SS_15_2.size());
+    dict = dict.set('12-Pz',       SS_12_2.size());
+    dict = dict.set('11-PzI',      SS_11_2.size());
+    dict = dict.set('63-MAH',      SS_63_2.size());
+    dict = dict.set('66-MAC',      SS_66_2.size());
+    dict = dict.set('77-MAA-PD',   SS_77_2.size());
+    dict = dict.set('25-ANV',      SS_25_2.size());
+    dict = dict.set('23-PlyDu',    SS_23_2.size());
+    dict = dict.set('61-Salares',  SS_61_2.size());
+    dict = dict.set('33-AGUA',     SS_33_2.size());
+
+
+  }
+  if (cant_muestras == 1){
+    print('Cantidad de muestras por clase ' + year, dict )
+  }
+
+  var bands = input_mosaic.bandNames()
+
+  // Se entrena el RF
+  var rf_fit = ee.Classifier.smileRandomForest(nro_arboles).train(train, target, bands);
+  
+  // Se clasifica el año y la zona
+  var clasificacion = input_mosaic.classify(rf_fit);
+  clasificacion = clasificacion.set( 'year', year )
+                               .set( 'zona', id_zona )
+                               .set( 'version', version_clasificacion )
+  
+  var f_out = ee.Feature(null, dict)
+  train = train.map(function(feature){
+    return feature.set('year', ee.Number(year))
+  })
+  var m = ee.FeatureCollection(train)
+
+  
+  f_out = f_out.set('year', year)
+               .set( 'zona', id_zona)
+               .set( 'version', version_clasificacion)
+
+  // La primera vez cuando es null se asigna la clasificación del 1er año y luego se agrega la banda para los años siguientes
+  clasificacion_completa = clasificacion_completa === null?clasificacion_completa=clasificacion.rename('classification_' + year):clasificacion_completa.addBands(clasificacion.rename('classification_' + year));
+  tabla_output = tabla_output === null?tabla_output=ee.FeatureCollection(f_out):tabla_output.merge(f_out);
+  muestras_usadas = muestras_usadas === null?muestras_usadas=ee.FeatureCollection(m):muestras_usadas.merge(m);
+}) // BUCLE PRINCIPAL POR AÑOS: FIN
+  // Se exporta la clasificación de rango temporal                            
+Export.image.toAsset({
+ image: clasificacion_completa.updateMask(limite), 
+ description: 'clasificacion-' + year_inicio + '-' + year_fin + '-' + id_zona + '-' + version_clasificacion, 
+ assetId: output + 'clasificacion-' + year_inicio + '-' + year_fin + '-'+ id_zona + '-' + version_clasificacion, 
+ pyramidingPolicy: {'.default': 'mode'}, 
+ region: ee.Feature(zonas.filter(ee.Filter.eq(id_zona_prop, id_zona)).first()).geometry(), 
+ scale: 30,
+ maxPixels: 1e13})
+
+Export.table.toDrive({
+		collection: tabla_output,
+  	description: bioma + '_tabla_output_v' + version_clasificacion + '_z' + id_zona + '_' + year_inicio + '-' + year_fin,
+  	folder: drive_nro_muestras,
+  	fileFormat: 'CSV',
+
+  })
+
+
+if (calcula_exactitud == 1){ 
+    var get_accuracy = require('users/MapBiomasAR/coleccion-5:Calculos/Exactitud_Chaco_col5_Regiones_anios.js').get_accuracy;
+  var clasif_acc = clasificacion_completa.select('classification_' + year_exactitud)
+  var zona_acc = ee.Feature(zonas.filter(ee.Filter.eq(id_zona_prop, id_zona)).first()).geometry()
+  var exactitud_year_region_pais = get_accuracy(clasif_acc, zona_acc, id_zona, year_exactitud)
+ print(exactitud_year_region_pais, 'exactitud año '+ year_exactitud)
+  
+}
+if (conf_mat ==1){  
+  var get_accuracy = require('users/MapBiomasAR/coleccion-5:Calculos/Conf_mat_Chaco_col5_Regiones_anios.js').get_accuracy;
+  var clasif_acc = clasificacion_completa.select('classification_' + year_exactitud)
+  var zona_acc = ee.Feature(zonas.filter(ee.Filter.eq(id_zona_prop, id_zona)).first()).geometry()
+  var exactitud_year_region_pais = get_accuracy(clasif_acc, zona_acc,id_zona, year_exactitud)
+}
+
+if (calcula_area == 1){
+        // get raster with area km2
+    var pixelArea = ee.Image.pixelArea().divide(1000000);
+    /**
+     * Helper function
+     * @param item 
+     */
+    var convert2featCollection = function (item) {
+        item = ee.Dictionary(item);
+        var feature = ee.Feature(ee.Geometry.Point([0, 0]))
+            .set('classe', item.get('classe'))
+            .set('area', item.get('sum'));
+        return feature;
+    };
+   /**
+     * Calculate area crossing a cover map (deforestation, mapbiomas)
+     * and a region map (states, biomes, municipalites)
+     * @param image 
+     * @param geometry
+     */
+    var calculateArea = function (image, geometry) {
+        var reducer = ee.Reducer.sum().group(1, 'classe');
+        var areas = pixelArea.addBands(image)
+            .reduceRegion({
+                reducer: reducer,
+                geometry: geometry,
+                scale: 120,
+                maxPixels: 1e12,
+                tileScale:4
+            });
+        var year = ee.Number(image.get('year'));
+        areas = ee.List(areas.get('groups')).map(convert2featCollection);
+        areas = ee.FeatureCollection(areas);
+        return areas;
+    };
+    // get raster with area km2
+    var areas = calculateArea(clasificacion_completa.select('classification_' + year_calcula_area).selfMask(), myRegion)
+        .map(
+            function(feature){
+                return feature.set('year', String(year_calcula_area));
+            }
+        );
+   
+    print('Área (km2) Bosque Cerrado(03), año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals', 3).first().get('area'))
+    print('Área (km2) Bosque Abierto(04), año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals', 4).first().get('area'))
+    print('Área (km2) Bosque Inundable(06), año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals', 6).first().get('area'))
+    print('Área (km2) Pastizal Inundable(11) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',11).first().get('area'))
+    print('Área (km2) Pastizal Inundable(12) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',12).first().get('area'))
+    
+    print('Área (km2) M.Arbustos Herbaceas(63), año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals', 63).first().get('area'))
+    print('Área (km2) M.Arbustal Cerrado(66) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',66).first().get('area'))
+    print('Área (km2) M.Arbustal Abierto(77) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',77).first().get('area'))
+
+    print('Área (km2) Ln Cultivadas(09), año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',9).first().get('area'))
+    print('Área (km2) Pastura(15) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',15).first().get('area'))
+    print('Área (km2) Agricultura(19) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',19).first().get('area'))
+ //   print('Área (km2) Cultivos Arbustivos(36) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',36).first().get('area'))
+    print('Área (km2) Citrus(47) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',47).first().get('area'))
+    print('Área (km2) O. Cult. Perennes(48) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',48).first().get('area'))
+    print('Área (km2) Vid(83) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',83).first().get('area'))
+    print('Área (km2) Olivos(84) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',84).first().get('area'))
+    print('Área (km2) Nogales(85) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',85).first().get('area'))
+    print('Área (km2) Arandano(86) año ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',86).first().get('area'))
+
+    print('Área en km2 de Playas y Dunas(23) año: ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',23).first().get('area'))
+    print('Área en km2 de ANV(25) año: ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',25).first().get('area'))
+    print('Área en km2 de Salares(61) año: ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',61).first().get('area'))
+
+    print('Área en km2 de Agua(33) año: ' + year_calcula_area +  ' ' , areas.filterMetadata('classe','equals',33).first().get('area'))
+
+  }
+
+// --------------------------------------
+//  APP: Controles de gráficos y leyenda
+// --------------------------------------
+var app = {
+  
+  flag_plot_enable: false,
+  
+  year_default : '' + year_fin ,
+  bioma: bioma,
+  limite: limite,
+  plot: ts.plots.ts_landsat, // Objeto plot
+  
+  current_year: null,
+  
+  // Plot config 
+  params: {
+    start: '1985-01-01',
+    end: '2024-12-31',
+    geom: null,
+    
+    index: 'ndvi',
+    
+    cloud_cover: 10,
+    
+    options:{
+      title: 'NDVI time series',
+      subtitle: '',
+      vAxis: {title: 'NDVI'},min:-0.2,max:1
+    }
+  },
+  
+  activate: function(v){
+    app.flag_plot_enable = !app.flag_plot_enable;
+    app.panel_plot.widgets().reset([]);
+  },
+  
+
+  on_map_click: function(p){
+    if(app.flag_plot_enable){
+      var point = ee.Geometry.Point([p.lon, p.lat])
+      app.params.geom = point
+      
+      app.params.options.subtitle = 'Año: ' + app.current_year
+      
+      app.panel_plot.widgets().reset([app.plot.get(app.params)]);
+        if (ver_muestras == 1){
+          if (app.current_year >= 1985 && app.current_year <= 2023) {    
+            Map.layers().reset([
+              Map.layers().get(0), //Mosaic
+              Map.layers().get(1), //colecion 4
+              Map.layers().get(2), //diference
+              Map.layers().get(3), //Clasificacion
+              Map.layers().get(4), //region
+              Map.layers().get(5), //Muestras
+              ui.Map.Layer(ee.Feature(point,null), {color:'yellow'}, 'Inspect', true) // OnClick
+              
+            ])
+          } else {
+            Map.layers().reset([
+              Map.layers().get(0), //Mosaic
+              Map.layers().get(1), //Clasificacion
+              Map.layers().get(2), //region
+              Map.layers().get(3), //Muestras
+              ui.Map.Layer(ee.Feature(point,null), {color:'yellow'}, 'Inspect', true) // OnClick
+              
+            ])
+          }
+        } 
+        if (ver_muestras == 0){
+          if (app.current_year >= 1985 && app.current_year <= 2023) {    
+            Map.layers().reset([
+              Map.layers().get(0), //Mosaic
+              Map.layers().get(1), //colecion 4
+              Map.layers().get(2), //diference
+              Map.layers().get(3), //Clasificacion
+              Map.layers().get(4), //region
+              ui.Map.Layer(ee.Feature(point,null), {color:'yellow'}, 'Inspect', true) // OnClick
+              
+            ])
+          } else {
+            Map.layers().reset([
+              Map.layers().get(0), //Mosaic
+              Map.layers().get(1), // Clasificacion
+              Map.layers().get(2), //region
+              ui.Map.Layer(ee.Feature(point,null), {color:'yellow'}, 'Inspect', true) // OnClick
+              
+            ])
+          }
+        }         
+    }
+  },
+  
+
+  
+   mosaic_change: function(year){
+    
+    app.current_year = year;
+    
+    var input_mosaic = mosaics
+            //.filterMetadata('version', 'equals', version_mosaico)
+            .filterMetadata('year', 'equals', parseInt(year))
+            .mosaic()
+    
+ 
+    muestras_usadas = muestras_usadas.sort('reference').map(function(f) {
+      return f.set({
+        style: ee.Dictionary(legend).get(f.get('reference'))
+      })
+    })
+    var clasificacion_actual = clasificacion_completa.updateMask(app.limite)
+    var mosaic = ui.Map.Layer(input_mosaic, RGBvis, 'RGB ' + year, true)
+    //var limite = ee.Feature(zonas.filter(ee.Filter.eq('idZona', id_zona)).first()).geometry()
+    vis_class.bands = ['classification_' + year]
+    var clasificacion = ui.Map.Layer(clasificacion_actual, vis_class, 'Clasificación ' + year, true);
+    var region2 = ui.Map.Layer(region.style({fillColor: 'FF000000'}) , {},'Region')
+    var point_init = ui.Map.Layer(ee.Feature( ee.Geometry.Point([0,0]), null), {color:'yellow'}, 'Inspect', true);
+    if(ver_muestras == 1){
+      var muestras = ui.Map.Layer(muestras_usadas.filterMetadata('year','equals', ee.Number.parse(year)).style({ styleProperty: 'style' }),{}, 'Muestras ' + year, true);
+
+    }
+    
+    
+   var coleccion5 = ee.Image('projects/mapbiomas-public/assets/chaco/lulc/collection5/mapbiomas_chaco_collection5_integration_v2').updateMask(app.limite)
+   var coleccion5 = coleccion5.remap(          //Números de las clases presentes en el mapa de la colección
+          {from:[ 3, 4, 6, 9, 11, 15, 19, 23, 24, 25, 26, 36, 42, 43, 44, 45, 57, 58, 61],
+          //Números de las clases que se desea generar el mapa de clases
+          //estables, pueden ser los mismos o no
+          //Para adecuarnos a la leyenda de Argentina modificamos:
+          //
+          to:[ 3, 4, 6, 9, 11, 15, 19, 23, 25, 25, 33, 36, 12, 12, 63, 63, 19, 19, 61], bandName:'classification_'+ year})
+
+    if (app.current_year >= 1985 && app.current_year <= 2023){
+          var coleccion5 = coleccion5.rename('classification_'+ year)
+                                        //.filter(ee.Filter.eq('version','2'))
+                                        //.select('classification_'+ year)
+                                        
+         var img_dif = diferenca(coleccion5,
+                     clasificacion_actual.select('classification_' + year),
+                     clase_diferencia, false)
+         var diference = ui.Map.Layer(img_dif,vischange,'Diferencia de la clase ' + String(clase_diferencia) + ' ' + String(year),false)
+         var collection5_layer = ui.Map.Layer(coleccion5, vis_class, 'Coleccion 5 ' + year, false);
+    
+    
+      if (ver_muestras == 0){
+        Map.layers().reset([
+            mosaic,
+            collection5_layer,
+            clasificacion, // Clasificacion
+            diference, //Diferencia
+            region2,
+            Map.layers().length() >= 6? Map.layers().get(5):point_init, // Inspect
+          ])}
+          
+      if (ver_muestras == 1){
+        Map.layers().reset([
+          mosaic,
+          collection5_layer,
+          clasificacion, // Clasificacion
+          diference, //Diferencia
+          region2,
+          muestras,
+          Map.layers().length() >= 7? Map.layers().get(6):point_init, // Inspect
+          ])}
+    }  
+  else{  
+    if (ver_muestras == 0){
+      Map.layers().reset([
+          mosaic,
+          clasificacion, // Clasificacion
+          region2,
+          Map.layers().length() >= 4? Map.layers().get(3):point_init, // Inspect
+      ])}
+          
+    if (ver_muestras == 1){
+      Map.layers().reset([
+          mosaic,
+          clasificacion, // Clasificacion
+          region2,
+          muestras,
+          Map.layers().length() >= 5? Map.layers().get(4):point_init, // Inspect
+      ])}
+  
+    }
+  },
+  
+  // Visual Interface
+  panel_main: ui.Panel([], ui.Panel.Layout.Flow('vertical'), {position: 'bottom-right'}),
+  panel_plot: ui.Panel([], ui.Panel.Layout.Flow('horizontal')),
+  chk_plot: ui.Checkbox('Activar serie temporal', false, function(v){app.activate(v)}, false, {border: '1px', padding: '5px'}),
+  lst_years: ui.Select(years.map(function(n){return '' + n}), 'Mosaico Año... ', null, function(v){app.mosaic_change(v)}, false, {}),
+  lbl_current_class: ui.Label(''),
+  panel: ui.Panel([], ui.Panel.Layout.Flow('vertical'), {position: 'top-left'}),
+  panel_legend: ui.Panel({widgets: [utils.get_legend()]}),
+  
+  init: function(){
+    app.panel_main.add(app.panel_plot);
+    app.panel_main.add(app.chk_plot);
+    app.panel_main.add(app.lbl_current_class);
+    app.panel_main.add(app.lst_years);
+    app.panel.add(app.panel_legend)
+
+    app.lst_years.setValue(app.year_default, true)    
+    Map.add(app.panel_main)
+    Map.add(app.panel)
+    Map.onClick(app.on_map_click)
+    
+    
+    
+  }
+  
+  
+}
+app.init()
+
+Map.setOptions('HYBRID')
+

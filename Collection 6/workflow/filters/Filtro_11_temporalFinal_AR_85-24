@@ -1,0 +1,149 @@
+var version = 3
+//Año de visualización
+var year = 1987
+
+var col = '6'
+var bioma = "Chaco"
+var year_inicio = 1985
+var year_fin = 2024
+var col_arg = '2'
+
+//CAMBIAR VERSION IN ANTES DE CORRER
+
+
+//NO modificar
+// Col 5 v0 sin filtro
+
+var dirout = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + col_arg + '/GENERAL/CLASSIFICATION/FILTERS/CHACO/clasificaciones-filtradas/'
+
+var regioesCollection = ee.FeatureCollection("projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo")
+
+var versionIn = 'col'+ col + '-v' + version + '-Multiples-generales6-fullZF-' + year_inicio + '-' + year_fin
+var versionOut = 'col'+ col + '-v' + version + '-temFinal-fullZF-' + year_inicio + '-' + year_fin  +  '-mosaic'
+
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+// print(palette)
+palette = palette.concat(["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#a2c830", "#000000", "#000000", "#000000","#000000","#000000", "#690a8f", "#8e9f53", "#ada48e", "#3b33ab"])
+
+//Visualizador de las clasificaciones
+var vis =  {
+      //'bands': ['classification_2016'],
+      'min': 0,
+      'max': 86,
+      'palette': palette,
+      'format': 'png',
+      'bands': 'classification_' + year
+
+    }
+    
+var image_in1  =  ee.Image(dirout + versionIn + '-z1');
+var image_in2  =  ee.Image(dirout + versionIn + '-z2');
+var image_in3  =  ee.Image(dirout + versionIn + '-z3');
+var image_in4  =  ee.Image(dirout + versionIn + '-z4');
+var image_in5  =  ee.Image(dirout + versionIn + '-z5');
+var image_in6  =  ee.Image(dirout + versionIn + '-z6');
+var image_in7  =  ee.Image(dirout + versionIn + '-z7');
+var image_in8  =  ee.Image(dirout + versionIn + '-z8');
+var image_in9  =  ee.Image(dirout + versionIn + '-z9');
+var image_in10 =  ee.Image(dirout + versionIn + '-z10');
+var image_in11 =  ee.Image(dirout + versionIn + '-z11');
+var image_in12 =  ee.Image(dirout + versionIn + '-z12');
+var image_in13 =  ee.Image(dirout + versionIn + '-z13');
+var image_in14 =  ee.Image(dirout + versionIn + '-z14');
+
+var image_in = ee.ImageCollection([image_in1, image_in2, image_in3,
+                  image_in4, image_in5, image_in6, image_in7, image_in8,
+                  image_in9, image_in10, image_in11, image_in12, image_in13,
+                  image_in14]).min()
+
+
+
+
+print(image_in)
+
+
+var mask3 = function(valor, ano, imagem){
+  var mask = imagem.select('classification_'+ (parseInt(ano) - 1)).eq (valor)
+        .and(imagem.select('classification_'+ (ano)              ).neq(valor))
+        .and(imagem.select('classification_'+ (parseInt(ano) + 1)).eq (valor))
+  var muda_img = imagem.select('classification_'+ (ano)    ).mask(mask.eq(1)).where(mask.eq(1), valor);  
+  var img_out = imagem.select('classification_'+ano).blend(muda_img)
+  return img_out;
+}
+
+var mask3_pastura = function(valor1, valor2, ano, imagem){
+  var mask = imagem.select('classification_'+ (parseInt(ano) - 1)).eq (valor1)
+        .and(imagem.select('classification_'+ (ano)              ).neq(valor2))
+        .and(imagem.select('classification_'+ (parseInt(ano) + 1)).eq (valor1))
+  var muda_img = imagem.select('classification_'+ (ano)    ).mask(mask.eq(1)).where(mask.eq(1), valor1);  
+  var img_out = imagem.select('classification_'+ano).blend(muda_img)
+  return img_out;
+}
+
+var anos3 = ['1986','1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998', '1999', '2000', '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018', '2019','2020', '2021', '2022', '2023']
+var anos4 = ['1986','1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998', '1999', '2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018', '2019','2020', '2021', '2022']
+var anos5 = ['1986','1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998', '1999', '2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018', '2019', '2020', '2021']
+
+var window3years = function(imagem, valor){
+   var img_out = imagem.select('classification_1985')
+   for (var i_ano=0;i_ano<anos3.length; i_ano++){  
+     var ano = anos3[i_ano];   
+     img_out = img_out.addBands(mask3(valor,ano, imagem)) }
+     img_out = img_out.addBands(imagem.select('classification_2024'))
+   return img_out
+}
+
+var window3years_pastura = function(imagem, valor1, valor2){
+   var img_out = imagem.select('classification_1985')
+   for (var i_ano=0;i_ano<anos3.length; i_ano++){  
+     var ano = anos3[i_ano];   
+     img_out = img_out.addBands(mask3_pastura(valor1, valor2, ano, imagem)) }
+     img_out = img_out.addBands(imagem.select('classification_2024'))
+   return img_out
+}
+//put "classification_2018 in the end of bands after gap fill
+var original = image_in.select('classification_1985')
+for (var i_ano=0;i_ano<anos3.length; i_ano++){  
+  var ano = anos3[i_ano]; 
+  original = original.addBands(image_in.select('classification_'+ano)) 
+}
+original = original.addBands(image_in.select('classification_2024'))
+
+var filtered = original
+
+ var ordem_exec = [3, 4, 66, 77, 9, 47, 48, 83, 84, 85, 86, 12, 63];
+  
+  for (var i_class=0;i_class<ordem_exec.length; i_class++){  
+     var id_class = ordem_exec[i_class]; 
+     filtered = window3years(filtered, id_class)
+  }
+
+  filtered = window3years_pastura(filtered, 15, 19)
+
+
+  var ordem_exec = [19, 6, 11, 23, 24, 25, 61, 33];
+  
+  for (var i_class=0;i_class<ordem_exec.length; i_class++){  
+     var id_class = ordem_exec[i_class]; 
+     filtered = window3years(filtered, id_class)
+  }
+
+Map.addLayer(original, vis, 'original');
+
+Map.addLayer(filtered, vis, 'filtered');
+
+
+filtered = filtered.set('version', versionOut)
+
+print(filtered, 'filtered')
+Export.image.toAsset({
+    'image': filtered,
+    'description': versionOut,
+    'assetId': dirout + versionOut,
+    'pyramidingPolicy': {
+        '.default': 'mode'
+    },
+    'region': regioesCollection,
+    'scale': 30,
+    'maxPixels': 1e13
+});

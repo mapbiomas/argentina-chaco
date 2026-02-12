@@ -1,0 +1,158 @@
+var version_hand = '01' //para definição de diferentes limiares a serem usado
+var col = '6'
+var col_arg = '2'
+var dir_filtros = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + col_arg + '/GENERAL/CLASSIFICATION/FILTERS/CHACO/clasificaciones-filtradas/'
+var regioesCollection = ee.FeatureCollection('projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo')
+
+//Map.addLayer(regioesCollection)
+
+//var raster_z1  = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z2  = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z3  = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z4  = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z5  = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z6  = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z7  = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z8  = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z9  = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z10 = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z11 = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z12 = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//var raster_z13 = ee.Image('projects/MapBiomas_Pampa/ANCILLARY_DATA/C3/IC_ZonasPampaArg_C3/ZonasPampa_ARG_C3_CONbuffer_raster_z1')
+//
+//
+//var ic_raster = ee.ImageCollection([raster_z1, 
+//                        raster_z2 ,
+//                        raster_z3 ,
+//                        raster_z4 ,
+//                        raster_z5 ,
+//                        raster_z6 ,
+//                        raster_z7 ,
+//                        raster_z8 ,
+//                        raster_z9 ,
+//                        raster_z10,
+//                        raster_z11,
+//                        raster_z12,
+//                        raster_z13])
+//var limite_reg_raster = ic_raster.mosaic
+//print(limite_reg_raster,'limite_reg_raster')
+var srtm = ee.Image("USGS/SRTMGL1_003")
+var hand30_1000 =  ee.Image("users/gena/GlobalHAND/30m/hand-1000");
+
+var hand_limit = 15 // limiar de correção
+var lim_class_hand = 5.3 //valor original 5.3 //varzea
+var lim_slope = 0.087 //em radianos, igual a 5 Graus, valor original 0.076 //plato
+function radians(img) { return img.toFloat().multiply(3.1415927).divide(180); }
+
+var slopes = ee.Terrain.slope(srtm);
+
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+function hillshade(az, ze, slope, aspect) {
+  var azimuth = radians(ee.Image(az));
+  var zenith = radians(ee.Image(ze));
+  return azimuth.subtract(aspect).cos().multiply(slope.sin()).multiply(zenith.sin())
+      .add(zenith.cos().multiply(slope.cos()));
+}
+
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+function hillshadeit(image, elevation, weight, height_multiplier, azimuth, zenith) {
+  var hsv  = image.unitScale(0, 255).rgbToHsv();
+
+  var terrain = ee.call('Terrain', elevation.multiply(height_multiplier));
+  var slope = radians(terrain.select(['slope']));
+
+  var aspect = radians(terrain.select(['aspect'])).resample('bicubic');
+  var hs = hillshade(azimuth, zenith, slope, aspect).resample('bicubic');
+
+  var intensity = hs.multiply(weight).multiply(hsv.select('value'));
+  var huesat = hsv.select('hue', 'saturation');
+
+  return ee.Image.cat(huesat, intensity).hsvToRgb();
+}
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+var doHandClasses = function (dist) {
+
+  var gaussianKernel = ee.Kernel.gaussian(3, 2, 'pixels', true, 2);
+  var terrain = ee.call('Terrain', srtm.convolve(gaussianKernel));
+  
+  var slope = radians(terrain.select(['slope']))
+    .lt(lim_slope);//valor original 0.076
+
+  slope = slope
+    .focal_max({radius: 50, units: 'meters'})
+    .focal_min({radius: 50, units: 'meters'});
+  //                                                           varzea = 0                                         proximo a varzea = 15m = 1                                    mais de 15 e encosta = 2                      + 15m e plano = 3      
+  var hand_class = hand30_1000.addBands(slope).expression("(b(0) <= "+ lim_class_hand + "  ) ? 0 : (b(0) <= "+ dist +" && b(0) > "+ lim_class_hand + " ) ? 1 : (b(0) > "+ dist +" && b(1) == 0 ) ? 2   : (b(0) > "+ dist +" && b(1) == 1 ) ? 3 : 0" );
+  //image.expression('condition ? true_action : false_action)
+  return hand_class;
+};
+
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+  
+var showOffHand = function (dist) {
+
+  var gaussianKernel = ee.Kernel.gaussian(3, 2, 'pixels', true, 2);
+  var terrain = ee.call('Terrain', srtm.convolve(gaussianKernel));
+  
+  var slope = radians(terrain.select(['slope']))
+    .lt(lim_slope);//valor original 0.076
+
+  slope = slope
+    .focal_max({radius: 50, units: 'meters'})
+    //.focal_mode({radius: 55, units: 'meters', iterations:5})
+    .focal_min({radius: 50, units: 'meters'})
+  
+  var hand_class = hand30_1000.addBands(slope).expression("(b(0) <= "+ lim_class_hand + "  ) ? 0 : (b(0) <= "+ dist +" && b(0) > "+ lim_class_hand + " ) ? 1 : (b(0) > "+ dist +" && b(1) == 0 ) ? 2   : (b(0) > "+ dist +" && b(1) == 1 ) ? 3 : 0" );
+  
+  var style_hand_classes = "<RasterSymbolizer>  <ColorMap  type=\"intervals\" extended=\"false\" >      <ColorMapEntry color=\"#000055\" quantity=\"0\" label=\"Waterlogged\"/>      <ColorMapEntry color=\"#00ff00\" quantity=\"1\" label=\"Ecotone\"/>      <ColorMapEntry color=\"#ffff00\" quantity=\"2\" label=\"Slope\" />      <ColorMapEntry color=\"#ff0000\" quantity=\"3\" label=\"Plateau\" />    </ColorMap>  </RasterSymbolizer>";
+  
+  var azimuth = 90;
+  var zenith = 30;
+
+  //var hand_class_vis = hand_class.visualize({palette: colors_hand_classes})
+  var hand_class_vis = hand_class
+    //.focal_mode({radius:30, units:'meters', iterations:5})
+    //.focal_mode({radius:0.8, iterations:3})
+    //.focal_max({radius: 30, units: 'meters'})
+    //.focal_min({radius: 30, units: 'meters'})
+    .sldStyle(style_hand_classes);
+
+  print(hand_class_vis)
+  return hillshadeit(hand_class_vis, srtm, 1.1, 2, azimuth, zenith);
+};
+
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//.where(doHandClasses(slopes_threshold).gt(1), 0)
+
+var hand_class = doHandClasses(hand_limit)
+
+var new_hand = showOffHand(hand_limit);
+Map.addLayer(new_hand, {}, 'HAND colorido');
+
+Map.addLayer(hand30_1000,{},'HAND')
+
+hand_class = hand_class.clip(regioesCollection).toByte()
+Map.addLayer(hand_class,{},'Classes HAND')
+
+Export.image.toAsset({
+    'image': hand_class,
+    'description': 'classes_hand',
+    'assetId': dir_filtros + 'classes_hand' + version_hand,
+    'pyramidingPolicy': {
+        '.default': 'mode'
+    },
+    'region': regioesCollection.geometry().bounds(),
+    'scale': 30,
+    'maxPixels': 1e13
+});
+

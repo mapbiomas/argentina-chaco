@@ -1,0 +1,129 @@
+// MAPBIOMAS PAMPA
+// COLLECTION 05 
+// AUTHOR: Juliano Schirmbeck
+// DATE: August 2020
+//
+//  Randon Forest to region 06
+
+var version = '3'; 
+var col = '6'
+var years = '1985-2024'
+var col_arg = '2'
+//projects/MapBiomas_Pampa/WORKSPACE/COLLECTION2/ARGENTINA/classification_c2_filtros/PAMPAARGENTINA_col2_6_gap_85-21_2_mosaic
+var versionOut = years + '_pre_incidentes_v' + version
+var versionIn = 'col' + col + '-v' + version + '-gap-' + years + '-mosaic'
+
+var anos = [                            '1985',
+            '1986','1987','1988','1989','1990',
+            '1991','1992','1993','1994','1995','1996','1997','1998','1999','2000',
+            '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010',
+            '2011','2012','2013','2014','2015','2016','2017','2018','2019','2020',
+            '2021', '2022', '2023', '2024'];
+
+var dir_filtros = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + col_arg + '/GENERAL/CLASSIFICATION/FILTERS/CHACO/clasificaciones-filtradas/'
+var regioesCollection = ee.FeatureCollection('projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo')
+
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+// print(palette)
+palette = palette.concat(["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#a2c830", "#000000", "#000000", "#000000","#000000","#000000", "#690a8f", "#8e9f53", "#ada48e", "#3b33ab"])
+
+//Visualizador de las clasificaciones
+var vis =  {
+      //'bands': ['classification_2016'],
+      'min': 0,
+      'max': 86,
+      'palette': palette,
+      'format': 'png'
+    }
+
+var visParMedian = {'bands':['median_swir1','median_nir','median_red'], 'gain':[0.08, 0.06,0.2],'gamma':0.5 };
+
+//editar os parametros
+//var classeIds =    [3,11,12,21,22,29,33]
+//var newClasseIds = [3,11,12,21,22,29,33]
+ 
+var regioes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+for (var i_regiao=0;i_regiao<regioes.length; i_regiao++){
+    var regiao = regioes[i_regiao];
+  
+  
+  var limite = regioesCollection.filterMetadata('zona', 'equals', regiao);
+  
+  var image_in =  ee.Image(dir_filtros+ versionIn);
+  //var image_in_2 =  ee.Image(dir_filtros+ '4_gap_mosaic');  
+ // var image_in =  image_in_1.addBands(image_in_2)
+  
+  
+  var colList = ee.List([])
+  for (var i_ano=0;i_ano<anos.length; i_ano++){
+    var ano = anos[i_ano];
+    var colList = colList.add(image_in.select(['classification_'+ano],['classification']))
+  }
+  var imc_carta = ee.ImageCollection(colList)
+  //print('imc_carta',imc_carta)
+  var img1 =  ee.Image(imc_carta.first());
+  
+  var imc_carta4 = imc_carta.map(function(image) {
+     // image = image.remap(classeIds, newClasseIds, 21)
+      image = image.mask(image.neq(27));
+      return image.rename('classification');
+  });
+  
+  var image_moda = imc_carta4.reduce(ee.Reducer.mode());
+  var image_incidence = imc_carta.reduce(ee.Reducer.countRuns()).subtract(1).rename('incidence');
+  var states = imc_carta.reduce(ee.Reducer.countDistinctNonNull());
+  
+  
+  // ******* incidence **********
+  
+var vis2 =  {
+      //'bands': ['classification_2016'],
+      'min': 0,
+      'max': 86,
+      'palette': palette,
+      'format': 'png'
+    }
+  
+  var palette_incidence = ["#C8C8C8","#FED266","#FBA713","#cb701b", "#cb701b", "#a95512", "#a95512", "#662000",  "#662000", "#cb181d"]
+  image_in = image_in.select(['classification_1985',
+                                  'classification_1986', 'classification_1987', 'classification_1988', 'classification_1989', 
+                                  'classification_1990', 'classification_1991', 'classification_1992', 'classification_1993', 'classification_1994', 
+                                  'classification_1995', 'classification_1996', 'classification_1997', 'classification_1998', 'classification_1999',
+                                  'classification_2000', 'classification_2001', 'classification_2002', 'classification_2003', 'classification_2004', 
+                                  'classification_2005', 'classification_2006', 'classification_2007', 'classification_2008', 'classification_2009', 
+                                  'classification_2010', 'classification_2011', 'classification_2012', 'classification_2013', 'classification_2014',
+                                  'classification_2015', 'classification_2016', 'classification_2017', 'classification_2018', 'classification_2019',
+                                  'classification_2020', 'classification_2021', 'classification_2022', 'classification_2023', 'classification_2024'],
+                                 ['1985', 
+                                  '1986', '1987','1988', '1989', '1990','1991', '1992', '1993','1994', '1995', '1996','1997', '1998', '1999',
+                                  '2000', '2001', '2002','2003', '2004', '2005','2006', '2007', '2008','2009', '2010', '2011','2012', '2013', '2014',
+                                  '2015', '2016', '2017', '2018','2019','2020','2021', '2022', '2023', '2024'])
+//  Map.addLayer(image_in, vis2, 'MapBiomas', false);
+  
+//  Map.addLayer(image_incidence, {}, "incidents original", false);
+  
+  image_incidence = image_incidence.addBands(image_incidence.mask(image_incidence.gt(6)).where(image_incidence.gt(6),1).rename('valor1'))
+  image_incidence = image_incidence.addBands(image_incidence.select('valor1').connectedPixelCount(100,false).rename('connect'))
+  image_incidence = image_incidence.addBands(image_moda)
+  image_incidence = image_incidence.addBands(states.rename('states'))
+  
+  print('image_incidence',image_incidence)
+//  Map.addLayer(image_incidence, {}, "incidents final", false);
+//  Map.addLayer(image_incidence.select('valor1'), false)
+  
+  
+  Export.image.toAsset({
+      'image': image_incidence,
+      'description': String(regiao) + '-' + versionOut,
+      'assetId': dir_filtros +'_Z'+ String(regiao) + '_' + versionOut,
+      'pyramidingPolicy': {
+          '.default': 'mode'
+      },
+      'region': limite.geometry().bounds(),
+      'scale': 30,
+      'maxPixels': 1e13
+  });
+}
+Map.addLayer(image_incidence)
+//prepara_incidente_outros

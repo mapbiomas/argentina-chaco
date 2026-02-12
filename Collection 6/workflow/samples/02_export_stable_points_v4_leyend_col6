@@ -1,0 +1,324 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var geometry = 
+    /* color: #d63000 */
+    /* shown: false */
+    ee.Geometry.Polygon(
+        [[[-57.681653408585, -24.992726152982165],
+          [-61.285169033585, -23.3086577139496],
+          [-62.691419033585, -21.84793334061846],
+          [-64.71290340858499, -21.84793334061846],
+          [-65.15138364172319, -22.05162872409396],
+          [-65.43800106483498, -22.600518110601836],
+          [-65.77164027278577, -24.3786420676335],
+          [-66.31690731483498, -25.439997094702704],
+          [-66.69044247108499, -27.981494963330952],
+          [-68.17652340977772, -29.05728259930673],
+          [-67.64917965977772, -32.343916972710474],
+          [-67.05591794102772, -33.98086444901867],
+          [-65.88038083165272, -33.7162606399417],
+          [-64.93341670567231, -33.41360744562228],
+          [-63.67212887852771, -32.94521729721794],
+          [-63.54029294102771, -31.514081225534433],
+          [-60.61792965977771, -31.03519923705997],
+          [-59.55225583165271, -30.875032960632357],
+          [-58.59644528477771, -30.013133107044073],
+          [-55.87183590977771, -27.93730533668717],
+          [-56.39917965977771, -27.236226591716285],
+          [-57.40992184727771, -27.197146764242927],
+          [-58.37671872227771, -27.118946016524113],
+          [-57.40992184727771, -25.48410044503294]]]),
+    geometry2 = 
+    /* color: #d63000 */
+    /* shown: false */
+    ee.Geometry.Polygon(
+        [[[-66.70206604897146, -27.678969055544115],
+          [-66.92179261147146, -31.499239751503083],
+          [-63.01065979897146, -31.611581665040823],
+          [-58.96769104897146, -28.57035277674777],
+          [-58.57218323647146, -25.557620583178316],
+          [-61.95597229897146, -23.921307068695302],
+          [-64.90030823647146, -22.95365276815063]]]);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+//Este código procesa una imágen que contiene los píxeles estables por clase
+//a lo largo de subperíodos de 10 años. A partir de ellos genera un máximo de
+//2000 puntos por clase y por zona distribuídos al azar para el período de tiempo elegido
+//Antes de generar los puntos separa las clases de arbustal y bosque a partir
+//De umbrales de altura por zona
+//Entrada:
+//-dirsamples: La ruta del asset donde se encuentra el mapa de clases estables
+//-regioesCollection: El asset que tiene las zonas de la región a mapear
+//
+//Salida:
+//Un Feature collection con los puntos por clase y por zona para el período elegido.
+//
+//Variables a modificar
+//-colecion: entre comillas el número de colección que se desea generar los puntos estables
+// Ej: para la colección 5 usamos la colección 4, asi que va "4"
+//-version: entre comillas la versión del mapa de clases estables y por ende de las muestras
+//-sufix: Debe completarse ir comentándose los que no quieren utilizar. Hay que correr
+//el código para todos los sufix que hay. 
+//-dirout: Asset donde deseamos guardar los puntos de clases estables deseado
+//se recomienda usar el mismo que donde está el mapa de clases estables, asi ya está
+//todo automatizado
+//-bioma: Colocar el nombre de la región a generar los puntos, se utiliza para exportar
+//
+//Al cambiar de colección es necesario modificar el sufix del período 4
+//Corroborar que estén las clases correctas en todas las variables de la función getTrainingSamples
+
+//Este script también divide las clases arbustivas de los bosques
+// y las clases de cultivos perennes, frutales y silvicultura
+//Algunas clases no tuvieron muestras para esta clasificación
+
+// Autores: Juliano Schirmbeck y Sofía Sarrailhé
+
+var version = '4'
+var nSamples = 2000;
+var coleccion_Arg = 2
+var coleccion = 6
+//var sufix = '15_23'
+//var sufix = '05_14'
+//var sufix = '95_04' 
+var sufix = '85_94'
+
+
+var bioma = 'CHACO'
+var dirout = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + coleccion_Arg + '/GENERAL/SAMPLES/STABLE/' + bioma + '/'
+var dirsamples = ee.Image(dirout + 'Chaco_mapa_clases_estables_C' + coleccion + '_' + sufix +'_v' + version).clip(geometry)
+
+print('dirsamples',dirsamples)
+//Map.addLayer(dirsamples)
+var regioesCollection = ee.FeatureCollection('projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo').filter(ee.Filter.bounds(geometry2))
+
+var altura = ee.ImageCollection("users/potapovpeter/GEDI_V27").mosaic().rename("ALT_POTA")
+//var altura = (altura_int.select(['ALT_POTA'])).toFloat()
+//Map.addLayer(altura,{},'altura')
+var frutales = ee.Image('projects/mapbiomas-argentina/assets/ANCILLARY_DATA/RASTER/CHACO/frutales-version-4')
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+palette = palette.concat(["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#a2c830", "#000000", "#000000", "#000000","#000000","#000000", "#690a8f", "#8e9f53", "#ada48e", "#3b33ab"])
+
+var umbralesZonas =ee.Dictionary( {
+  1:1,
+  2: 1.5,
+  3: 3,
+  4: 1.5,
+  5: 2,
+  6: 2,
+  7: 2,
+  8: 3,
+  9: 2,
+  10: 2,
+  11: 2,
+  12: 2,
+  13: 2,
+  14: 1 })
+
+var vis = {
+    'bands': ['reference'],
+    'min': 0,
+    'max': 86,
+    'palette': palette
+};
+
+print(regioesCollection)
+Map.addLayer(dirsamples, vis, 'Classes persistentes ' + sufix, true);
+////////////////////////////////////////////////////////
+var getTrainingSamples = function (feature) {
+  var regiao = ee.Number(feature.get('zona'));
+
+  var thr_altura = ee.Number(umbralesZonas.get(regiao))
+  //Se elije la altura deseada y se hace una mascara
+  
+  var msk_altura = altura.lte(thr_altura)
+  //Se hace una mascara para la clase que se quiere dividir
+  var vegMask_LC = ee.Image(0)
+                         .where(dirsamples
+                         .eq(3)
+                         ,1)
+  //Se unen las mascaras y se cambia la clase
+  var vegMap_LC = ee.Image(0)
+                 .where(vegMask_LC.eq(1).and(msk_altura.eq(1)), 66)
+    
+  vegMap_LC = vegMap_LC.updateMask(vegMap_LC.neq(0))
+  var dirsamples_clasesNuevas = dirsamples.where(vegMap_LC, vegMap_LC)
+  
+  var vegMask_LA = ee.Image(0)
+                         .where(dirsamples_clasesNuevas
+                         .eq(4)
+                         ,1)
+  //Se unen las mascaras y se cambia la clase
+  var vegMap_LA = ee.Image(0)
+                 .where(vegMask_LA.eq(1).and(msk_altura.eq(1)), 77)
+    
+  vegMap_LA = vegMap_LA.updateMask(vegMap_LA.neq(0))
+  dirsamples_clasesNuevas = dirsamples_clasesNuevas.where(vegMap_LA, vegMap_LA)
+    
+
+  //Se hace una mascara para la clase que se quiere dividir
+  var vegMask_Ci = ee.Image(0)
+                         .where(dirsamples
+                         .eq(9)
+                         .or(dirsamples
+                         .eq(36))
+                         ,1)
+  //Se unen las mascaras y se cambia la clase
+  var vegMap_Ci = ee.Image(0)
+                 .where(vegMask_Ci.eq(1).and(frutales.eq(47)), 47)
+    
+  vegMap_Ci = vegMap_Ci.updateMask(vegMap_Ci.neq(0))
+  var dirsamples_clasesNuevas = dirsamples_clasesNuevas.where(vegMap_Ci, vegMap_Ci)
+
+  //Se hace una mascara para la clase que se quiere dividir
+  var vegMask_OFr = ee.Image(0)
+                         .where(dirsamples
+                         .eq(9)
+                         .or(dirsamples
+                         .eq(36))
+                         ,1)
+  //Se unen las mascaras y se cambia la clase
+  var vegMap_OFr = ee.Image(0)
+                 .where(vegMask_OFr.eq(1).and(frutales.eq(48)), 48)
+    
+  vegMap_OFr = vegMap_OFr.updateMask(vegMap_OFr.neq(0))
+  var dirsamples_clasesNuevas = dirsamples_clasesNuevas.where(vegMap_OFr, vegMap_OFr)
+
+  //Se hace una mascara para la clase que se quiere dividir
+  var vegMask_Vid = ee.Image(0)
+                         .where(dirsamples
+                         .eq(9)
+                         .or(dirsamples
+                         .eq(36))
+                         ,1)
+  //Se unen las mascaras y se cambia la clase
+  var vegMap_Vid = ee.Image(0)
+                 .where(vegMask_Vid.eq(1).and(frutales.eq(83)), 83)
+    
+  vegMap_Vid = vegMap_Vid.updateMask(vegMap_Vid.neq(0))
+  var dirsamples_clasesNuevas = dirsamples_clasesNuevas.where(vegMap_Vid, vegMap_Vid)
+
+  //Se hace una mascara para la clase que se quiere dividir
+  var vegMask_Oli = ee.Image(0)
+                         .where(dirsamples
+                         .eq(9)
+                         .or(dirsamples
+                         .eq(36))
+                         ,1)
+  //Se unen las mascaras y se cambia la clase
+  var vegMap_Oli = ee.Image(0)
+                 .where(vegMask_Oli.eq(1).and(frutales.eq(84)), 84)
+    
+  vegMap_Oli = vegMap_Oli.updateMask(vegMap_Oli.neq(0))
+  var dirsamples_clasesNuevas = dirsamples_clasesNuevas.where(vegMap_Oli, vegMap_Oli)  
+
+  //Se hace una mascara para la clase que se quiere dividir
+  var vegMask_Nog = ee.Image(0)
+                         .where(dirsamples
+                         .eq(9)
+                         .or(dirsamples
+                         .eq(36))
+                         ,1)
+  //Se unen las mascaras y se cambia la clase
+  var vegMap_Nog = ee.Image(0)
+                 .where(vegMask_Nog.eq(1).and(frutales.eq(85)), 85)
+    
+  vegMap_Nog = vegMap_Nog.updateMask(vegMap_Nog.neq(0))
+  var dirsamples_clasesNuevas = dirsamples_clasesNuevas.where(vegMap_Nog, vegMap_Nog) 
+
+  //Se hace una mascara para la clase que se quiere dividir
+  var vegMask_Ara = ee.Image(0)
+                         .where(dirsamples
+                         .eq(9)
+                         .or(dirsamples
+                         .eq(36))
+                         ,1)
+  //Se unen las mascaras y se cambia la clase
+  var vegMap_Ara = ee.Image(0)
+                 .where(vegMask_Ara.eq(1).and(frutales.eq(86)), 86)
+    
+  vegMap_Ara = vegMap_Ara.updateMask(vegMap_Ara.neq(0))
+  var dirsamples_clasesNuevas = dirsamples_clasesNuevas.where(vegMap_Ara, vegMap_Ara) 
+  
+  //print(regiao)
+  var num_train_03 = nSamples
+  var num_train_04 = nSamples
+  var num_train_06 = nSamples
+  var num_train_09 = nSamples
+  var num_train_11 = nSamples
+  var num_train_12 = nSamples
+  var num_train_15 = nSamples
+  var num_train_19 = nSamples
+  var num_train_23 = nSamples
+  var num_train_25 = nSamples
+  var num_train_33 = nSamples
+  var num_train_36 = nSamples
+  var num_train_47 = nSamples
+  var num_train_48 = nSamples
+  var num_train_61 = nSamples
+  var num_train_63 = nSamples
+  var num_train_66 = nSamples
+  var num_train_77 = nSamples
+  var num_train_83 = nSamples
+  var num_train_84 = nSamples
+  var num_train_85 = nSamples
+  var num_train_86 = nSamples
+
+  var clippedGrid = ee.Feature(feature).geometry()
+
+  var referenceMap =  dirsamples_clasesNuevas.clip(clippedGrid);
+  //Map.addLayer(referenceMap,vis)
+ // Map.addLayer(msk_altura, {}, 'Msk Altura ' + regiao, false)
+                    
+  var training = referenceMap.stratifiedSample({scale:30, classBand: 'reference', numPoints: 0, region: feature.geometry(), seed: 1, geometries: true,
+           classValues: [3, 4, 6, 9, 11, 12, 15, 19, 23, 25, 33, 36, 47, 48, 61, 63, 66, 77, 83, 84, 85, 86], 
+           classPoints: [num_train_03,
+                         num_train_04,
+                         num_train_06,
+                         num_train_09,
+                         num_train_11,
+                         num_train_12,
+                         num_train_15,
+                         num_train_19,
+                         num_train_23,
+                         num_train_25,
+                         num_train_33,
+                         num_train_36,
+                         num_train_47,
+                         num_train_48,
+                         num_train_61,
+                         num_train_63,
+                         num_train_66,
+                         num_train_77,
+                         num_train_83,
+                         num_train_84,
+                         num_train_85,
+                         num_train_86,
+
+                         ]
+  });
+
+  training = training.map(function(feat) {return feat.set({'zona': regiao})});
+  return training;
+ };
+
+var mySamples = regioesCollection.map(getTrainingSamples).flatten();
+
+Map.addLayer(mySamples)
+
+var prueba_clase_zona = mySamples.filterMetadata('reference','equals', 48)
+               //.filterMetadata('zona','equals',5)
+print(prueba_clase_zona.size(), 'muestras')
+//print(mySamples.limit(1))
+//Map.addLayer(prueba_clase_zona, {color: 'red'}, 'Prueba clase 77')
+
+var prueba_clase_zona2 = mySamples.filterMetadata('reference','equals',3)
+               .filterMetadata('zona','equals',7)
+
+//Map.addLayer(prueba_clase_zona2, {color: 'green'}, 'Prueba clase 77')
+
+Export.table.toAsset(mySamples,
+  'puntos_C' + coleccion + '_' + bioma + '_'  + sufix + '_v' + version,
+  dirout + 'puntos_C' + coleccion +'_' + bioma + '_'  + sufix + '_v' + version)
+  
+//  Map.addLayer(dirsamples_clasesNuevas, vis, 'reference')
+ 
+  //var totalSample = ee.FeatureCollection('projects/MapBiomas_Pampa/SAMPLES/C1/Estaveis/Argentina/Year/pontos_exp1_v01_2019')
+  //Map.addLayer(totalSample,{'palette':'ff0000'})

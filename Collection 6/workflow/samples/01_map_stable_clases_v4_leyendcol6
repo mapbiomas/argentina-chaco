@@ -1,0 +1,236 @@
+//Este código procesa una imágen con la colección de MapBiomas desdeada con 
+//los años como bandas para generar un mapa de las clases estables a lo 
+//largo de un período determinado. Se utilizan períodos de 10 años
+//
+//Entrada:
+//colecao: La ruta del asset donde se encuentra la colección a utilizar
+//region: Asset de la region que se esta mapeando
+//
+//Salida:
+//Una única imagen con las clases persistentes para el período seleccionado.
+//
+//Variables a modificar
+//colecion: entre comillas el número de colección que se desea generar el mapa de áreas estables
+// Ej: para la colección 5 usamos la colección 4, asi que va "4"
+//version: entre comillas la versión del mapa de clases estables
+//período: Debe correrse el código para los distintos periodos.Een este caso 
+// puede tomar valores del 1 al 4 
+//dirout: Asset donde deseamos guardar el mapa de clases estables deseado
+//
+//
+//Al cambiar de colección es necesario modificar los años, las bandas y el sufix del período 4
+//Corroborar que estén las clases correctas en las variables colfor y classFrequency
+
+var version = '4'  
+var coleccion = 6
+var coleccion_Arg = '2'
+var biome = 'CHACO'
+
+var periodo = 4 //1, 2, 3, 4  valores
+
+//var regioesCollection = ee.FeatureCollection("projects/mapbiomas-chaco/COLECCION-3/Limite/zonas-operativas-por-pais-c3")
+var regions = ee.FeatureCollection('projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo')
+
+var region1 = regions.filter(ee.Filter.eq('zona', 1))
+var region2 = regions.filter(ee.Filter.eq('zona', 2))
+var region3 = regions.filter(ee.Filter.eq('zona', 3))
+var region4 = regions.filter(ee.Filter.eq('zona', 4))
+var region5 = regions.filter(ee.Filter.eq('zona', 5))
+var region6 = regions.filter(ee.Filter.eq('zona', 6))
+var region7 = regions.filter(ee.Filter.eq('zona', 7))
+var region8 = regions.filter(ee.Filter.eq('zona', 8))
+var region9 = regions.filter(ee.Filter.eq('zona', 9))
+var region10 = regions.filter(ee.Filter.eq('zona', 10))
+var region11 = regions.filter(ee.Filter.eq('zona', 11))
+var region12 = regions.filter(ee.Filter.eq('zona', 12))
+var region13 = regions.filter(ee.Filter.eq('zona', 13))
+var region14 = regions.filter(ee.Filter.eq('zona', 14))
+
+var region = region1.merge(region1)
+                    .merge(region2)  
+                    .merge(region3)  
+                    .merge(region4)  
+                    .merge(region5)  
+                    .merge(region6)  
+                    .merge(region7)  
+                    .merge(region8)  
+                    .merge(region9)  
+                    .merge(region10)  
+                    .merge(region11)  
+                    .merge(region12)  
+                    .merge(region13)  
+                    .merge(region14)  
+Map.addLayer(region)
+var dirout = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + coleccion_Arg + '/GENERAL/SAMPLES/STABLE/' + biome + '/'
+
+var col_anterior = coleccion -1
+//print(regioesCollection)
+
+var palettes = require('users/mapbiomas/modules:Palettes.js');
+
+var colecao= ee.Image('projects/mapbiomas-public/assets/chaco/lulc/collection' + col_anterior + '/mapbiomas_chaco_collection' + col_anterior + '_integration_v2')
+
+print('input',colecao)
+
+if (periodo == 1){
+    var freq_lim = 10, 
+        anos = ['1985','1986','1987','1988','1989','1990','1991','1992','1993','1994'], 
+        bandas_anos = ['classification_1985','classification_1986','classification_1987','classification_1988',
+                'classification_1989','classification_1990','classification_1991',
+                'classification_1992','classification_1993','classification_1994'], 
+        sufix = '_85_94';
+}
+
+if (periodo ==2 ){
+    var freq_lim = 10, 
+            anos = ['1995','1996','1997','1998','1999','2000','2001','2002','2003','2004'], 
+            bandas_anos = ['classification_1995','classification_1996','classification_1997','classification_1998',
+                    'classification_1999','classification_2000','classification_2001','classification_2002',
+                    'classification_2003','classification_2004'], 
+            sufix = '_95_04';
+}
+if (periodo == 3 ){
+  var freq_lim = 10,
+              bandas_anos = ['classification_2005','classification_2006','classification_2007','classification_2008','classification_2009',
+                             'classification_2010','classification_2011','classification_2012','classification_2013','classification_2014'
+                            ],
+              anos = ['2005','2006','2007','2008','2009',
+                      '2010','2011','2012','2013','2014'
+                            ],               
+          sufix = '_05_14';
+}
+
+if (periodo == 4 ){
+  var freq_lim = 9,
+              bandas_anos = ['classification_2015','classification_2016','classification_2017','classification_2018','classification_2019',
+                             'classification_2020','classification_2021','classification_2022','classification_2023'],
+              anos = ['2015','2016','2017','2018','2019',
+                      '2020','2021', '2022', '2023'],               
+          sufix = '_15_23';
+}
+
+
+//                                                  3         4                     6                                9                      11        13                   15                                                      19                               22                                          26                                                                                                            36                                                                42          43        44          45                                                                                                                                57          58
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+var vis_class = {
+    'bands': 'classification_2023',
+    'min': 0,
+    'max': 69,
+    'palette': palette
+};
+
+Map.addLayer(colecao, vis_class,'coleccion')
+
+var colList = ee.List([])
+
+for (var i_ano=0;i_ano<anos.length; i_ano++){
+  var ano = anos[i_ano];
+  var colflor = colecao.select('classification_' + ano).remap(
+          //Números de las clases presentes en el mapa de la colección
+          [ 3, 4, 6, 9, 11, 15, 19, 23, 24, 25, 26, 36, 42, 43, 44, 45, 57, 58, 61],
+          //Números de las clases que se desea generar el mapa de clases
+          //estables, pueden ser los mismos o no
+          //Para adecuarnos a la leyenda de Argentina modificamos:
+          //
+          [ 3, 4, 6, 9, 11, 15, 19, 23, 25, 25, 33, 36, 12, 12, 63, 63, 19, 19, 61])
+  colList = colList.add(colflor.int8())
+};
+
+var collection = ee.ImageCollection(colList)
+
+var unique = function(arr) {
+    var u = {},
+        a = [];
+    for (var i = 0, l = arr.length; i < l; ++i) {
+        if (!u.hasOwnProperty(arr[i])) {
+            a.push(arr[i]);
+            u[arr[i]] = 1;
+        }
+    }
+    return a;
+};
+
+/**
+ * REFERENCE MAP
+ */
+
+var getFrenquencyMask = function(collection, classId) {
+
+    var classIdInt = parseInt(classId, 10);
+    var maskCollection = collection.map(function(image) {
+        return image.eq(classIdInt);
+    });
+
+    var frequency = maskCollection.reduce(ee.Reducer.sum());
+
+    var frequencyMask = frequency.gte(classFrequency[classId])
+        .multiply(classIdInt)
+        .toByte();
+
+    frequencyMask = frequencyMask.mask(frequencyMask.eq(classIdInt));
+
+    return frequencyMask.rename('frequency').set('class_id', classId);
+};
+///////////////////////////
+//FUNCTION: LOOP for each carta
+
+var lista_image = ee.List([]);
+var classFrequency = { "3"  : freq_lim,
+                       "4"  : freq_lim,
+                       "6"  : freq_lim,
+                       "9"  : freq_lim,
+                       "11" : freq_lim,
+                       "12" : freq_lim,
+                       "15" : freq_lim,
+                       "19" : freq_lim,
+                       "23" : freq_lim,
+                       "25" : freq_lim,
+                       "33" : freq_lim,
+                       "36" : freq_lim,
+                       "63" : freq_lim,
+                       "61" : freq_lim,
+
+} 
+
+
+var lista_image = ee.List([]);
+
+var frequencyMasks = Object.keys(classFrequency).map(function(classId) {
+    return getFrenquencyMask(collection, classId);
+});
+
+frequencyMasks = ee.ImageCollection.fromImages(frequencyMasks);
+print(frequencyMasks, 'frequencyMasks')
+
+var referenceMap = frequencyMasks.reduce(ee.Reducer.firstNonNull()).clip(region);
+
+//referenceMap = referenceMap.mask(referenceMap.neq(27)).rename("reference");
+referenceMap = referenceMap.mask(referenceMap).rename("reference");
+
+var vis = {
+    'bands': ['reference'],
+    'min': 0,
+    'max': 69,
+    'palette': palette
+};
+
+Map.addLayer(referenceMap, vis, 'Classes persistentes 1985 a 2022', true);
+print(referenceMap)
+//referenceMap = referenceMap.set('region_code', region)
+
+Export.image.toAsset({
+    "image": referenceMap.toInt8(),
+    "description": 'Chaco_mapa_clases_estables_C' + coleccion + sufix +'_v' + version ,
+    "assetId": dirout + 'Chaco_mapa_clases_estables_C' + coleccion + sufix +'_v' + version ,
+    "scale": 30,
+    "pyramidingPolicy": {
+        '.default': 'mode'
+    },
+    "maxPixels": 1e13,
+    "region": region
+});  
+
+var blank = ee.Image(0).mask(0);
+//var outline = blank.paint(regioesCollection, 'AA0000', 2); 
+var visPar = {'palette':'000000','opacity': 0.6};
+//Map.addLayer(outline, visPar, 'Regiao', true);

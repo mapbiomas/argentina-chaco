@@ -1,0 +1,66 @@
+var version = 3
+var year_vis = 1987
+var col = '6'
+var bioma = "Chaco"
+var year_inicio = 1985
+var year_fin = 2024
+var col_arg = '2'
+//var img_in = ee.Image('projects/mapbiomas-chaco/COLECCION-5/RESULTADOS/clasificaciones-filtradas/col5-v2-urbano3-85-23')
+
+var versionOut = 'col' + col + '-v' + version + '-FiltroEspacialFinal-fullZF-' + year_inicio + '-' + year_fin 
+var versionIn = 'col'+ col + '-v' + version + '-tem1Solo-fullZF-' + year_inicio + '-' + year_fin  +  '-mosaic' 
+
+var dirout = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + col_arg + '/GENERAL/CLASSIFICATION/FILTERS/CHACO/clasificaciones-filtradas/'
+
+var img_in = ee.Image(dirout + versionIn)
+
+var regioesCollection = ee.FeatureCollection("projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo")
+var bands = img_in.bandNames()
+
+var filtroEspacial = function(band, img){
+  var image = img_in.select([band])
+  var patches = image.int16().connectedPixelCount(100, false);
+  var moda = image.focal_mode(1, 'square', 'pixels')
+  moda = moda.updateMask(patches.lte(5))
+  
+  return ee.Image(img).addBands(image.blend(moda))
+}
+
+var output = ee.Image(bands.iterate(filtroEspacial, ee.Image()))
+print(output)
+
+
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+// print(palette)
+palette = palette.concat(["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#a2c830", "#000000", "#000000", "#000000","#000000","#000000", "#690a8f", "#8e9f53", "#ada48e", "#3b33ab"])
+
+//Visualizador de las clasificaciones
+var vis1 =  {
+      //'bands': ['classification_2016'],
+      'min': 0,
+      'max': 86,
+      'palette': palette,
+      'format': 'png',
+      'bands': 'classification_' + year_vis
+
+    }// var output = ee.ImageCollection(filtroEspacial).toBands()
+output = output.select(bands)
+
+Map.addLayer(img_in, vis1, 'Previa')
+Map.addLayer(output, vis1, 'Filtrada')
+
+output = output.set('version', col + '-' + version + '-FiltroEspacialFinal')
+print(output, 'output')
+
+Export.image.toAsset({
+    'image': output,
+    'description': versionOut,
+    'assetId': dirout + versionOut,
+    'pyramidingPolicy': {
+        '.default': 'mode'
+    },
+    'region': regioesCollection,
+    'scale': 30,
+    'maxPixels': 1e13
+});
+

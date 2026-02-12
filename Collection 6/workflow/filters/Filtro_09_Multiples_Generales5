@@ -1,0 +1,681 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var BC_z10 = 
+    /* color: #d63000 */
+    /* shown: false */
+    ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-63.27860908787741, -29.324823168003533],
+                  [-63.31706123631491, -29.642810234676237],
+                  [-63.37250887920275, -30.01005722426212],
+                  [-63.42881381084337, -30.30010957458678],
+                  [-63.21732699443712, -30.297738161855552],
+                  [-63.25381924367653, -30.24823496320113],
+                  [-63.18321362544653, -30.189238775159986],
+                  [-63.21766652691438, -30.114840459596778],
+                  [-63.195838846684424, -30.021426794780073],
+                  [-63.22383474172769, -29.852062625142157],
+                  [-63.08984632218111, -29.694560760982007],
+                  [-62.929750657989, -29.578349013536037],
+                  [-63.08918133186222, -29.412832963978573],
+                  [-63.13311741064403, -29.351666838761638],
+                  [-63.179782409474555, -29.30123026839075]]]),
+            {
+              "msk": 1,
+              "system:index": "0"
+            }),
+        ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-62.90013946658548, -29.389870805505037],
+                  [-62.82941507555288, -29.394678116156047],
+                  [-62.7504386082423, -29.406622437634656],
+                  [-62.82300260374931, -29.32770403748687],
+                  [-62.92016041621372, -29.255915513490276],
+                  [-62.995699186852, -29.030403485177285],
+                  [-63.10145114394603, -28.90543945938732],
+                  [-63.195232086120015, -28.88713151185785],
+                  [-63.258727421305956, -28.808648412734335],
+                  [-63.32705377428452, -28.75117670478274],
+                  [-63.40907701107285, -28.758668571306426],
+                  [-63.31247800828641, -28.82726832341825],
+                  [-63.245982217485405, -28.901841846179384],
+                  [-63.21405512236553, -28.932493195161996],
+                  [-63.13627947468934, -28.938203531398514],
+                  [-63.0763281877325, -29.0123988053792],
+                  [-62.99982029483552, -29.096430168111603],
+                  [-62.99431986372504, -29.17914519364448],
+                  [-63.00393005388234, -29.24266854527156],
+                  [-63.00770794103703, -29.259151381750186],
+                  [-63.00667979310422, -29.278629391570412],
+                  [-63.005313702875846, -29.30742767480082]]]),
+            {
+              "msk": 1,
+              "system:index": "1"
+            })]),
+    BC_z10_2 = 
+    /* color: #0e71d6 */
+    /* shown: false */
+    ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-63.208795645745326, -28.91577963214535],
+                  [-63.200555899651576, -28.934410271886144],
+                  [-63.17926988890939, -28.940419441466826],
+                  [-63.164850333245326, -28.92779978291756],
+                  [-63.16622362426095, -28.936813981532072],
+                  [-63.156610587151576, -28.93861672718004],
+                  [-63.14631090453439, -28.944024775951824],
+                  [-63.142877676995326, -28.948230840949883],
+                  [-63.14219103148751, -28.95303756325662],
+                  [-63.1360112219172, -28.95303756325662],
+                  [-63.1305180578547, -28.956642458589457],
+                  [-63.12777147582345, -28.963251107422504],
+                  [-63.118158438714076, -28.97106078487848],
+                  [-63.11747179320626, -28.980071218886263],
+                  [-63.104425528557826, -28.995086864953013],
+                  [-63.0865727453547, -29.005296258790526],
+                  [-63.085199454339076, -29.0173060191728],
+                  [-63.08039293578439, -29.023910792263557],
+                  [-63.06906328490548, -29.023610584468496],
+                  [-63.06940660765939, -29.019707803713406],
+                  [-63.06528673461251, -29.0173060191728],
+                  [-63.06116686156564, -29.017906470543934],
+                  [-63.05945024779611, -29.01460394480757],
+                  [-63.05567369750314, -29.01190179976234],
+                  [-63.079706290276576, -28.95363838785988],
+                  [-63.09707080508574, -28.90778406808102],
+                  [-63.18221484805449, -28.900570753026255]]]),
+            {
+              "msk": 1,
+              "system:index": "0"
+            }),
+        ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-63.03595935489043, -29.041139865960602],
+                  [-63.03613101626738, -29.04864352451272],
+                  [-63.03750430728301, -29.051044579986133],
+                  [-63.03819095279082, -29.052245086764216],
+                  [-63.03750430728301, -29.05374570058737],
+                  [-63.03990756656035, -29.05524629257713],
+                  [-63.041109196199024, -29.05704697414376],
+                  [-63.04093753482207, -29.058697571292008],
+                  [-63.04213916446074, -29.059297781886144],
+                  [-63.04213916446074, -29.060348142019006],
+                  [-63.04351245547637, -29.06304901894216],
+                  [-63.0452290692459, -29.065449739030736],
+                  [-63.04471408511504, -29.07085115481316],
+                  [-63.040594212068164, -29.072651563838757],
+                  [-63.03819095279082, -29.07565217565199],
+                  [-63.035101048005664, -29.07565217565199],
+                  [-63.03304111148223, -29.07655234215807],
+                  [-63.026861301911914, -29.081053056726784],
+                  [-63.015359989656055, -29.08645365467318],
+                  [-63.01141177798613, -29.0821031951692],
+                  [-63.00591861392363, -29.07670236914455],
+                  [-63.00197040225371, -29.06304901894216],
+                  [-63.02600299502715, -29.03843841529348]]]),
+            {
+              "msk": 1,
+              "system:index": "1"
+            }),
+        ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-62.98968192065069, -29.24563559441079],
+                  [-62.99311514818975, -29.24563559441079],
+                  [-62.9929434868128, -29.24735805284293],
+                  [-62.993286809566705, -29.24848137967739],
+                  [-62.99320097887823, -29.249230257382084],
+                  [-62.99431677782842, -29.251252199804913],
+                  [-62.99363013232061, -29.258965168704016],
+                  [-62.996033391597955, -29.263907153699837],
+                  [-62.99260016405889, -29.265853930697272],
+                  [-62.992771825435845, -29.26842927213743],
+                  [-62.9903685661585, -29.2696272401497],
+                  [-62.98659201586553, -29.268728765456586]]]),
+            {
+              "msk": 1,
+              "system:index": "2"
+            }),
+        ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-62.93334120192289, -29.30688181805503],
+                  [-62.929564651629924, -29.31242021705269],
+                  [-62.92544477858305, -29.31391703005347],
+                  [-62.923556503436565, -29.318107989648247],
+                  [-62.921582397601604, -29.318107989648247],
+                  [-62.917548355243206, -29.314141550109916],
+                  [-62.91548841871977, -29.3101001135128],
+                  [-62.92347067274809, -29.304860976020446],
+                  [-62.92947882094145, -29.30343887801384]]]),
+            {
+              "msk": 1,
+              "system:index": "3"
+            }),
+        ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-62.95917623915434, -29.304411894579676],
+                  [-62.95814627089262, -29.30575913297504],
+                  [-62.95514219679594, -29.306058516870408],
+                  [-62.94595831312895, -29.30545974820159],
+                  [-62.94921987929106, -29.30246585217375],
+                  [-62.95806044020414, -29.303513725771253]]]),
+            {
+              "msk": 1,
+              "system:index": "4"
+            })]),
+    BI_z6 = 
+    /* color: #98ff00 */
+    /* shown: false */
+    ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-63.00193256494479, -29.222135438735798],
+                  [-62.99257701990084, -29.226629779330757],
+                  [-62.959274712771936, -29.22692939502452],
+                  [-62.968544427127405, -29.21382038873915],
+                  [-62.97712749597506, -29.20011031942329],
+                  [-62.98060175870271, -29.19921071015618],
+                  [-62.98609492276521, -29.19898593767066],
+                  [-62.996222944005446, -29.200184718565513],
+                  [-63.001716108067946, -29.212920899803507]]]),
+            {
+              "msk": 1,
+              "system:index": "0"
+            })]);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+// MAPBIOMAS Chaco
+// COLLECTION 05 
+// AUTHOR: Sarrailhé, Banchero. Adaptación de script de Schirmbeck
+// 
+//
+//
+//      CAMBIAR VERSION IN ANTES DE CORRER!!!
+//
+// 
+
+var year = 1988 //año de visualización
+var clase_dif = 25
+var leyenda_ndvi = 1 //Para que no se visualice la leyenda y el ndvi poner 0
+
+var version = 3
+
+var col = '6'
+var bioma = "Chaco"
+var year_inicio = 1985
+var year_fin = 2024
+var col_arg = '2'
+
+var versionOut = 'col'+ col + '-v' + version + '-Multiples-generales5-' + year_inicio + '-' + year_fin
+//var versionIn = 'col'+ col + '-v' + version + '-1Nat-' + year_inicio + '-' + year_fin +  '-mosaic'
+var versionIn = 'col'+ col + '-v' + version + '-Multiples-generales4-' + year_inicio + '-' + year_fin
+
+var versionIncidentes = year_inicio + '-' + year_fin + '_pre_incidentes_v' + version
+
+var version_hand = '01'
+
+var dir_filtros = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + col_arg + '/GENERAL/CLASSIFICATION/FILTERS/CHACO/clasificaciones-filtradas/'
+var regioesCollection = ee.FeatureCollection('projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo')
+var raster_zonas = 'projects/mapbiomas-chaco/SENTINEL/Limites/ic-zonas-raster'
+//var image_hand_class = ee.Image('projects/mapbiomas-workspace/AMOSTRAS/col6/PAMPA/class_col6_filtros/classes_hand01')
+var image_hand_class = ee.Image(dir_filtros + 'classes_hand' + version_hand)
+
+
+//Agregado de mosaico
+var mosaics =  ee.ImageCollection("projects/nexgenmap/MapBiomas2/LANDSAT/CHACO/mosaics")
+                 .filterMetadata('version', 'equals', '2')
+                 .filterMetadata('year', 'equals', year)
+
+// Input: Probabilidad de inundable
+var ic_prob = ee.ImageCollection( "projects/mapbiomas-chaco/COLECCION-4/RESULTADOS/ic-probabilidad-area-humeda" );
+var prob_p95 = ic_prob.reduce(ee.Reducer.percentile([95])) 
+
+//Visualizadores
+var RGBvis = {
+        bands: ['swir1_median', 'nir_median', 'red_median'],
+        gain: [0.08, 0.06, 0.2],
+        gamma: 0.85
+    };
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+// print(palette)
+palette = palette.concat(["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#a2c830", "#000000", "#000000", "#000000","#000000","#000000", "#690a8f", "#8e9f53", "#ada48e", "#3b33ab"])
+
+//Visualizador de las clasificaciones
+var vis1 =  {
+      //'bands': ['classification_2016'],
+      'min': 0,
+      'max': 86,
+      'palette': palette,
+      'format': 'png',
+      'bands': 'classification_' + year
+
+    }
+//Visualizador de las diferencias
+var vischange = {"min": 0, "max": 3,
+        "palette": "ffffff,ff0000,e6f919,aaaaaa",    //amarelo=e6f919    magenta=bb34c0
+        "format": "png",
+        'bands': 'classification_' + year
+  }
+
+Map.addLayer(mosaics, RGBvis,'mosaico')
+//Map.addLayer(image_in, vis1,'Completo Filtros base')
+
+
+//print(image_in)
+ var moda_vn = function(image_in){
+  var lst = image_in.bandNames().map(function(b){return ee.Image(image_in.select([b])).rename("B").toInt16()})
+  return ee.ImageCollection.fromImages(lst).mode()
+  
+}
+
+
+// Moda de agricultura/pastura
+
+var moda_agr_pas = function(stack){
+  var lst = stack.bandNames().map(function(b){
+    var msk = ee.Image(stack.select([b]))
+    msk = msk.eq(15).or(msk.eq(19)) // 
+    return ee.Image(stack.select([b])).updateMask(msk).rename("B").toInt16()
+  })
+  return ee.ImageCollection.fromImages(lst).mode()
+  
+}
+
+//Moda sin agua ni pz inundable
+var moda_no_inund = function(stack){
+  var lst = stack.bandNames().map(function(b){
+    var msk = ee.Image(stack.select([b]))
+    msk = msk.neq(11).and(msk.neq(33)) // 
+    return ee.Image(stack.select([b])).updateMask(msk).rename("B").toInt16()
+  })
+  return ee.ImageCollection.fromImages(lst).mode()
+  
+}
+
+//Moda sin agua ni pz inundable
+var moda_inund = function(stack){
+  var lst = stack.bandNames().map(function(b){
+    var msk = ee.Image(stack.select([b]))
+    msk = msk.eq(11).or(msk.eq(33)).or(msk.eq(6)) // 
+    return ee.Image(stack.select([b])).updateMask(msk).rename("B").toInt16()
+  })
+  return ee.ImageCollection.fromImages(lst).mode()
+  
+}
+//Map.addLayer(moda,{},"moda", false)
+
+//Script de Juliano que calcula las diferencias
+var diferenca = require('users/MapBiomasAR/coleccion-5:Utils/Mapa_Diferencias.js').diferenca
+
+//Calculando frequencias
+// General rule
+//CON 1985 (85-23)
+var exp = '100*((b( 0)+b( 1)+b( 2)+b( 3)+b( 4)+b( 5)+b( 6)+b( 7)+b( 8)+b( 9)'+
+               '+b(10)+b(11)+b(12)+b(13)+b(14)+b(15)+b(16)+b(17)+b(18)+b(19)'+
+               '+b(20)+b(21)+b(22)+b(23)+b(24)+b(25)+b(26)+b(27)+b(28)+b(29)'+
+               '+b(30)+b(31)+b(32)+b(33)+b(34)+b(35)+b(36)+b(37)+b(38)+b(39))/40)';
+//SIN 1985 (Hasta el 86)
+//var exp = '100*((b( 0)+b( 1)+b( 2)+b( 3)+b( 4)+b( 5)+b( 6)+b( 7)+b( 8)+b( 9)'+
+//               '+b(10)+b(11)+b(12)+b(13)+b(14)+b(15)+b(16)+b(17)+b(18)+b(19)'+
+//               '+b(20)+b(21)+b(22)+b(23)+b(24)+b(25)+b(26)+b(27)+b(28)+b(29)'+
+//               '+b(30)+b(31)+b(32)+b(33)+b(34)+b(35))/36)';
+
+var get_mask = function(año, img, clases){
+    var msk = ee.Image(0)
+    clases.forEach(function(c){
+      msk =   msk.or(img.select("classification_" + año).eq(c))
+    })
+    return msk
+}
+
+
+var regioes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+var years = ee.List.sequence(year_inicio, year_fin,1).getInfo();
+
+var img_desp = null 
+
+for (var i_regiao=0;i_regiao<regioes.length; i_regiao++){
+    var regiao = regioes[i_regiao];
+  
+
+  if (regiao ==  1)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao ==  2)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao ==  3)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao ==  4)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao ==  5)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao ==  6)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:1}
+  if (regiao ==  7)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao ==  8)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao ==  9)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao == 10)  var aplicar = {freq_bc_z10: 1, freq_bc_z10_2:1, freq_bi_z6:0}
+  if (regiao == 11)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao == 12)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao == 13)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+  if (regiao == 14)  var aplicar = {freq_bc_z10: 0, freq_bc_z10_2:0, freq_bi_z6:0}
+
+  var limite = regioesCollection.filterMetadata('zona', 'equals', regiao);
+
+//print(regioesCollection)
+  var image_incidence = ee.Image(dir_filtros + '_Z' + String(regiao) + '_'+ versionIncidentes)
+  var region_raster = ee.Image(raster_zonas+ '/zona_' + regiao)
+//  var image_in = ee.Image(dir_filtros + versionIn).updateMask(region_raster);
+  var image_in = ee.Image(dir_filtros + versionIn + '-z' + regiao ).updateMask(region_raster);
+//  Map.addLayer(image_in,vis1,'Completo Filtros base' + regiao, false)
+
+
+
+//  print(image_incidence)
+  
+  
+//  Map.addLayer(image_in,vis1,'MapBio Temporal_' + regiao, false)
+ // Map.addLayer(image_gap,vis1,'MapBio GAP')
+  
+    
+  // get frequency
+  // Bosque
+  var clase03 = image_in.eq(3).expression(exp) //Cerrado
+  var clase04 = image_in.eq(4).expression(exp) //Abierto
+  var clase06 = image_in.eq(6).expression(exp) //Inundable
+  // Pastizales
+  var clase12 = image_in.eq(12).expression(exp)//
+  var clase11 = image_in.eq(11).expression(exp)//Inundable
+  // Arbustos
+  var clase66 = image_in.eq(66).expression(exp)//Cerrado
+  var clase77 = image_in.eq(77).expression(exp)//Abierto
+  var clase63 = image_in.eq(63).expression(exp)//Disperso
+  // Antrópicas
+  var clase09 = image_in.eq(9).expression(exp) //Plantaciones Forestales
+  var clase15 = image_in.eq(15).expression(exp)//Pastura
+  var clase19 = image_in.eq(19).expression(exp)//Cultivos Anuales
+  var clase47 = image_in.eq(47).expression(exp)//Citrus
+  var clase48 = image_in.eq(48).expression(exp)//Otros Cultivos Perennes
+  var clase83 = image_in.eq(83).expression(exp)//Vid
+  var clase84 = image_in.eq(84).expression(exp)//Olivos
+  var clase85 = image_in.eq(85).expression(exp)//Nogales
+  var clase86 = image_in.eq(86).expression(exp)//Arandano
+  // No vegetada
+  var clase23 = image_in.eq(23).expression(exp)//Playas y Dunas
+  var clase25 = image_in.eq(25).expression(exp)//Otras areas no vegetadas
+  var clase61 = image_in.eq(61).expression(exp)//Salares
+  //Agua
+  var clase33 = image_in.eq(33).expression(exp)
+
+ //**********************************************
+  //******** Filtro pz zona 1 
+  //**********************************************
+  //Sacar agricultura del polígono, son pastizales 
+    
+  if (aplicar.freq_bc_z10){
+      var nombre_filtro = 'freq_bc_z10'
+      //var moda_no_inund_1 = moda_no_inund(image_in)
+      var i_msk_BC_z10 = BC_z10.reduceToImage(["msk"], ee.Reducer.first())
+      var activacion = ee.Image(0)
+                             .where(clase03.gt(1)
+                             .and(i_msk_BC_z10.eq(1)),
+                             1).updateMask(region_raster)
+    
+      var  vegMap51 =     
+                    image_in.select("classification_1985").where(activacion.eq(1).and(get_mask(1985, image_in, [6])), 3)
+          .addBands(image_in.select("classification_1986").where(activacion.eq(1).and(get_mask(1986, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1987").where(activacion.eq(1).and(get_mask(1987, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1988").where(activacion.eq(1).and(get_mask(1988, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1989").where(activacion.eq(1).and(get_mask(1989, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1990").where(activacion.eq(1).and(get_mask(1990, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1991").where(activacion.eq(1).and(get_mask(1991, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1992").where(activacion.eq(1).and(get_mask(1992, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1993").where(activacion.eq(1).and(get_mask(1993, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1994").where(activacion.eq(1).and(get_mask(1994, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1995").where(activacion.eq(1).and(get_mask(1995, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1996").where(activacion.eq(1).and(get_mask(1996, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1997").where(activacion.eq(1).and(get_mask(1997, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1998").where(activacion.eq(1).and(get_mask(1998, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1999").where(activacion.eq(1).and(get_mask(1999, image_in, [6])), 3))
+          
+          .addBands(image_in.select("classification_2000").where(activacion.eq(1).and(get_mask(2000, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2001").where(activacion.eq(1).and(get_mask(2001, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2002").where(activacion.eq(1).and(get_mask(2002, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2003").where(activacion.eq(1).and(get_mask(2003, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2004").where(activacion.eq(1).and(get_mask(2004, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2005").where(activacion.eq(1).and(get_mask(2005, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2006").where(activacion.eq(1).and(get_mask(2006, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2007").where(activacion.eq(1).and(get_mask(2007, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2008").where(activacion.eq(1).and(get_mask(2008, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2009").where(activacion.eq(1).and(get_mask(2009, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2010").where(activacion.eq(1).and(get_mask(2010, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2011").where(activacion.eq(1).and(get_mask(2011, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2012").where(activacion.eq(1).and(get_mask(2012, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2013").where(activacion.eq(1).and(get_mask(2013, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2014").where(activacion.eq(1).and(get_mask(2014, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2015").where(activacion.eq(1).and(get_mask(2015, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2016").where(activacion.eq(1).and(get_mask(2016, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2017").where(activacion.eq(1).and(get_mask(2017, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2018").where(activacion.eq(1).and(get_mask(2018, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2019").where(activacion.eq(1).and(get_mask(2019, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2020").where(activacion.eq(1).and(get_mask(2020, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2021").where(activacion.eq(1).and(get_mask(2021, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2022").where(activacion.eq(1).and(get_mask(2022, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2023").where(activacion.eq(1).and(get_mask(2023, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2024").where(activacion.eq(1).and(get_mask(2024, image_in, [6])), 3))
+  
+      vegMap51 = vegMap51.updateMask(vegMap51.neq(0))
+
+      image_in = image_in.where(vegMap51, vegMap51)
+
+      Map.addLayer(image_in,vis1,'Filtro ' + nombre_filtro + ' z' + regiao, false)
+      Map.addLayer(activacion,{min:0, max:1, palette: ["yellow","red"]},'Máscara ' + nombre_filtro + 'z ' + regiao, false)
+    
+  }
+
+ //**********************************************
+  //******** Filtro bc z zona 10 
+  //**********************************************
+
+  if (aplicar.freq_bc_z10_2){
+      var nombre_filtro = 'freq_bc_z10_2'
+      //var moda_no_inund_1 = moda_no_inund(image_in)
+      var i_msk_BC_z10_2 = BC_z10_2.reduceToImage(["msk"], ee.Reducer.first())
+      var activacion = ee.Image(0)
+                             .where((i_msk_BC_z10_2.eq(1)),
+                             1).updateMask(region_raster)
+    
+      var  vegMap51 =     
+                    image_in.select("classification_1985").where(activacion.eq(1).and(get_mask(1985, image_in, [6])), 3)
+          .addBands(image_in.select("classification_1986").where(activacion.eq(1).and(get_mask(1986, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1987").where(activacion.eq(1).and(get_mask(1987, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1988").where(activacion.eq(1).and(get_mask(1988, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1989").where(activacion.eq(1).and(get_mask(1989, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1990").where(activacion.eq(1).and(get_mask(1990, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1991").where(activacion.eq(1).and(get_mask(1991, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1992").where(activacion.eq(1).and(get_mask(1992, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1993").where(activacion.eq(1).and(get_mask(1993, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1994").where(activacion.eq(1).and(get_mask(1994, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1995").where(activacion.eq(1).and(get_mask(1995, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1996").where(activacion.eq(1).and(get_mask(1996, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1997").where(activacion.eq(1).and(get_mask(1997, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1998").where(activacion.eq(1).and(get_mask(1998, image_in, [6])), 3))
+          .addBands(image_in.select("classification_1999").where(activacion.eq(1).and(get_mask(1999, image_in, [6])), 3))
+          
+          .addBands(image_in.select("classification_2000").where(activacion.eq(1).and(get_mask(2000, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2001").where(activacion.eq(1).and(get_mask(2001, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2002").where(activacion.eq(1).and(get_mask(2002, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2003").where(activacion.eq(1).and(get_mask(2003, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2004").where(activacion.eq(1).and(get_mask(2004, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2005").where(activacion.eq(1).and(get_mask(2005, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2006").where(activacion.eq(1).and(get_mask(2006, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2007").where(activacion.eq(1).and(get_mask(2007, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2008").where(activacion.eq(1).and(get_mask(2008, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2009").where(activacion.eq(1).and(get_mask(2009, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2010").where(activacion.eq(1).and(get_mask(2010, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2011").where(activacion.eq(1).and(get_mask(2011, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2012").where(activacion.eq(1).and(get_mask(2012, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2013").where(activacion.eq(1).and(get_mask(2013, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2014").where(activacion.eq(1).and(get_mask(2014, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2015").where(activacion.eq(1).and(get_mask(2015, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2016").where(activacion.eq(1).and(get_mask(2016, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2017").where(activacion.eq(1).and(get_mask(2017, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2018").where(activacion.eq(1).and(get_mask(2018, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2019").where(activacion.eq(1).and(get_mask(2019, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2020").where(activacion.eq(1).and(get_mask(2020, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2021").where(activacion.eq(1).and(get_mask(2021, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2022").where(activacion.eq(1).and(get_mask(2022, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2023").where(activacion.eq(1).and(get_mask(2023, image_in, [6])), 3))
+          .addBands(image_in.select("classification_2024").where(activacion.eq(1).and(get_mask(2024, image_in, [6])), 3))
+  
+      vegMap51 = vegMap51.updateMask(vegMap51.neq(0))
+
+      image_in = image_in.where(vegMap51, vegMap51)
+
+      Map.addLayer(image_in,vis1,'Filtro ' + nombre_filtro + ' z' + regiao, false)
+      Map.addLayer(activacion,{min:0, max:1, palette: ["yellow","red"]},'Máscara ' + nombre_filtro + 'z ' + regiao, false)
+    
+  }
+
+
+ //**********************************************
+  //******** Filtro bc z zona 10 
+  //**********************************************
+
+  if (aplicar.freq_bi_z6){
+      var nombre_filtro = 'freq_bi_z6'
+      //var moda_no_inund_1 = moda_no_inund(image_in)
+      var i_msk_BI_z6 = BI_z6.reduceToImage(["msk"], ee.Reducer.first())
+      var activacion = ee.Image(0)
+                             .where((i_msk_BI_z6.eq(1)),
+                             1).updateMask(region_raster)
+    
+      var  vegMap51 =     
+                    image_in.select("classification_1985").where(activacion.eq(1).and(get_mask(1985, image_in, [3])), 6)
+          .addBands(image_in.select("classification_1986").where(activacion.eq(1).and(get_mask(1986, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1987").where(activacion.eq(1).and(get_mask(1987, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1988").where(activacion.eq(1).and(get_mask(1988, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1989").where(activacion.eq(1).and(get_mask(1989, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1990").where(activacion.eq(1).and(get_mask(1990, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1991").where(activacion.eq(1).and(get_mask(1991, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1992").where(activacion.eq(1).and(get_mask(1992, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1993").where(activacion.eq(1).and(get_mask(1993, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1994").where(activacion.eq(1).and(get_mask(1994, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1995").where(activacion.eq(1).and(get_mask(1995, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1996").where(activacion.eq(1).and(get_mask(1996, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1997").where(activacion.eq(1).and(get_mask(1997, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1998").where(activacion.eq(1).and(get_mask(1998, image_in, [3])), 6))
+          .addBands(image_in.select("classification_1999").where(activacion.eq(1).and(get_mask(1999, image_in, [3])), 6))
+          
+          .addBands(image_in.select("classification_2000").where(activacion.eq(1).and(get_mask(2000, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2001").where(activacion.eq(1).and(get_mask(2001, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2002").where(activacion.eq(1).and(get_mask(2002, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2003").where(activacion.eq(1).and(get_mask(2003, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2004").where(activacion.eq(1).and(get_mask(2004, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2005").where(activacion.eq(1).and(get_mask(2005, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2006").where(activacion.eq(1).and(get_mask(2006, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2007").where(activacion.eq(1).and(get_mask(2007, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2008").where(activacion.eq(1).and(get_mask(2008, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2009").where(activacion.eq(1).and(get_mask(2009, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2010").where(activacion.eq(1).and(get_mask(2010, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2011").where(activacion.eq(1).and(get_mask(2011, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2012").where(activacion.eq(1).and(get_mask(2012, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2013").where(activacion.eq(1).and(get_mask(2013, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2014").where(activacion.eq(1).and(get_mask(2014, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2015").where(activacion.eq(1).and(get_mask(2015, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2016").where(activacion.eq(1).and(get_mask(2016, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2017").where(activacion.eq(1).and(get_mask(2017, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2018").where(activacion.eq(1).and(get_mask(2018, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2019").where(activacion.eq(1).and(get_mask(2019, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2020").where(activacion.eq(1).and(get_mask(2020, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2021").where(activacion.eq(1).and(get_mask(2021, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2022").where(activacion.eq(1).and(get_mask(2022, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2023").where(activacion.eq(1).and(get_mask(2023, image_in, [3])), 6))
+          .addBands(image_in.select("classification_2024").where(activacion.eq(1).and(get_mask(2024, image_in, [3])), 6))
+  
+      vegMap51 = vegMap51.updateMask(vegMap51.neq(0))
+
+      image_in = image_in.where(vegMap51, vegMap51)
+
+      Map.addLayer(image_in,vis1,'Filtro ' + nombre_filtro + ' z' + regiao, false)
+      Map.addLayer(activacion,{min:0, max:1, palette: ["yellow","red"]},'Máscara ' + nombre_filtro + 'z ' + regiao, false)
+    
+  }
+
+
+
+var image_out = image_in
+   
+//  image_out = image_out
+//    .set('collection', col)
+//    .set('version', versionOut)
+//    .set('biome', bioma)
+//  
+//  //print(image_in)
+
+image_out = image_out.set({
+   "version": versionOut,
+    "versionIn": versionIn,
+    yearStart: year_inicio,
+    yearEnd: year_fin,
+    zona: regiao,
+    type: "Frequency filter",
+    project: "MapBiomas Chaco"
+})
+//  print(regiao, 'image out')
+
+  img_desp = img_desp === null?img_desp=image_out:img_desp=ee.ImageCollection([img_desp,image_out]).min();
+  Export.image.toAsset({
+      'image': image_out,
+      'description': versionOut + '-z' + regiao,
+      'assetId': dir_filtros + versionOut + '-z' + regiao,
+      'pyramidingPolicy': {
+          '.default': 'mode'
+      },
+      'region': regioesCollection,
+      'scale': 30,
+      'maxPixels': 1e13
+  });
+
+
+}
+//var img_antes = ee.Image(dir_filtros + versionIn )
+//var img_dif = diferenca(img_antes.select('classification_'+ year),image_out.select('classification_'+ year),clase_dif)//.clip(limite)
+//var img_dif = diferenca(img_antes, img_desp, clase_dif)//.clip(limite)
+//Map.addLayer(img_dif, vischange,'Dif filtros clase  ' + String(clase_dif), false)
+//Map.addLayer(img_antes, vis1,'Completo Filtros base')
+Map.addLayer(img_desp, vis1,'Completo Filtros Final')
+
+if (leyenda_ndvi == 1){
+var utils = require("users/MapBiomasAR/coleccion-6:Utils/getlegend_Chaco_c6")
+var ts_tools = require("users/MapBiomasAR/coleccion-4:Utils/time_series.js")
+var panel = null;
+var chk_refresh_plot_flag = null;
+var get_panel_chart_ts = function(){
+  
+Map.onClick(function(point){
+    var punto = ee.Geometry.Point([point["lon"], point["lat"]]);
+    
+    if(chk_refresh_plot_flag.getValue()){
+      panel.remove(panel.widgets().get(1))
+      panel.insert(1,ts_tools.get_time_serie_plot(punto));
+      
+    }
+    
+  });
+  
+  chk_refresh_plot_flag = ui.Checkbox("¿Actualizar serie?")
+  
+  var panel = ui.Panel({
+    widgets: [chk_refresh_plot_flag],
+    layout: ui.Panel.Layout.Flow('vertical')
+  })
+  return panel
+}
+panel = ui.Panel({
+  widgets: [utils.get_legend("Clases MB Chaco"),
+  get_panel_chart_ts()]
+  
+})
+ui.root.add(panel)
+}
+
+
+
+
+//      var thr_proba = 0.5;
+//      var msk_proba = prob_p95.gte(thr_proba);
+//Map.addLayer(msk_proba, {min:0, max:1, palette: ["white","red"]},"P > " + thr_proba + ' ' + regiao, false)     

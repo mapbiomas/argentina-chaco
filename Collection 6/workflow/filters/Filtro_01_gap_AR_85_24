@@ -1,0 +1,211 @@
+//Este código utiliza una imágen con los años como bandas y elimina los huecos 
+//en la clasificación generados por huecos en el mosaico Landsat. Para lograrlo 
+//rellena los mismos con la imagen del año anterior y de no ser posible del 
+//siguiente inmediato. Luego, el código rellena hacia el año siguiente, si es que 
+//quedaron huecos. Ej: Si hay un hueco en 1987 se rellenará con el valor para 
+//dicho píxel en 1986 y si también hay hueco con el de 1985, si también hay hueco 
+//utiliza el valor de 1988. También agrega la propiedad connected, que cuenta la 
+//cantidad de píxeles conectados con la misma clase que tiene cada píxel.
+//
+//Entrada:
+//-image: La ruta del asset donde se encuentra el mosaico de las clasificaciones
+//con los años como bandas de una única imagen que tiene todas las zonas.
+//-regioesCollection: El asset que tiene las zonas de la región a mapear
+//
+//Salida:
+//Una imagen con los años como bandas sin huecos y la conectividad de cada píxel
+//
+//Variables a modificar
+//-col: entre comillas el número de colección.
+//-version: entre comillas la versión de la clasificación.
+//-years: los años mapeados en la imagen de input en formato 'AAi-AAf'
+//-dirout: Asset donde deseamos guardar la clasificación sin huecos
+//se recomienda usar una sola image collection para todos los filtros
+//
+//Al cambiar de colección es necesario modificar las dos variables de bandNames y la variable 'anos'
+//Este script se puede usar también por zona sin hacer modificaciones, utilizando una imagen
+//que tenga únicamente la zona que se quiere filtrar y agregando algún indicativo
+// de zona en el nombre al exportar
+
+var version = '3'; 
+var col = '6'
+var years = '1985-2024'
+var col_arg = '2'
+
+//NO modificar
+// Col 5 v0 sin filtro
+
+var image = ee.Image('projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + col_arg + '/GENERAL/CLASSIFICATION/PRECLASSIFICATION/CHACO/clasificacion-' + years + '-'+ version + '-sin_filtroARG-mosaic')
+print(image, 'image')
+var dirout = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + col_arg + '/GENERAL/CLASSIFICATION/FILTERS/CHACO/clasificaciones-filtradas/'
+
+var regioesCollection = ee.FeatureCollection("projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo")
+
+var versionOut =  'col' + col + '-v' + version + '-gap-' + years + '-mosaic';
+
+
+var bandNames = ee.List([
+    'classification_1986',
+    'classification_1987',
+    'classification_1988',
+    'classification_1989',
+    'classification_1990',
+    'classification_1991',
+    'classification_1992',
+    'classification_1993',
+    'classification_1994',
+    'classification_1995',
+    'classification_1996',
+    'classification_1997',
+    'classification_1998',
+    'classification_1999',
+    'classification_2000',
+    'classification_2001',
+    'classification_2002',
+    'classification_2003',
+    'classification_2004',
+    'classification_2005',
+    'classification_2006',
+    'classification_2007',
+    'classification_2008',
+    'classification_2009',
+    'classification_2010',
+    'classification_2011',
+    'classification_2012',
+    'classification_2013',
+    'classification_2014',
+    'classification_2015',
+    'classification_2016',
+    'classification_2017',
+    'classification_2018',
+    'classification_2019',
+    'classification_2020',
+    'classification_2021',
+    'classification_2022',
+    'classification_2023',
+    'classification_2024' 
+
+
+]);
+
+var filtered = bandNames.iterate(function (bandName, previousImage) {
+
+	var currentImage = image.select(ee.String(bandName));
+
+	previousImage = ee.Image(previousImage);
+
+	currentImage = currentImage.unmask(previousImage.select([0]));
+
+	return currentImage.addBands(previousImage);
+
+}, ee.Image(image.select(['classification_1985'])));
+
+filtered = ee.Image(filtered);
+print(filtered, 'filtered')
+
+// Corrige os ultimos anos. Aplica o filtro da frente pra tras
+var bandNames = ee.List([
+    'classification_2023',
+    'classification_2022',
+    'classification_2021',
+    'classification_2020',
+    'classification_2019',
+    'classification_2018',
+    'classification_2017',
+    'classification_2016',
+    'classification_2015',
+    'classification_2014',
+    'classification_2013',
+    'classification_2012',
+    'classification_2011',
+    'classification_2010',
+    'classification_2009',
+    'classification_2008',
+    'classification_2007',
+    'classification_2006',
+    'classification_2005',
+    'classification_2004',
+    'classification_2003',
+    'classification_2002',
+    'classification_2001',
+    'classification_2000',
+    'classification_1999',
+    'classification_1998',
+    'classification_1997',
+    'classification_1996',
+    'classification_1995',
+    'classification_1994',
+    'classification_1993',
+    'classification_1992',
+    'classification_1991',
+    'classification_1990',
+    'classification_1989',
+    'classification_1988',
+    'classification_1987',
+    'classification_1986',
+    'classification_1985'    
+
+    ]);
+var filtered2 = bandNames.iterate(function (bandName, previousImage) {
+
+	var currentImage = filtered.select(ee.String(bandName));
+
+	previousImage = ee.Image(previousImage);
+
+	currentImage = currentImage.unmask(previousImage.select(previousImage.bandNames().length().subtract(1)));
+
+	return previousImage.addBands(currentImage);
+
+}, ee.Image(filtered.select(["classification_2024"])));
+
+
+filtered2 = ee.Image(filtered2)
+
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+// print(palette)
+palette = palette.concat(["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#a2c830", "#000000", "#000000", "#000000","#000000","#000000", "#690a8f", "#8e9f53", "#ada48e", "#3b33ab"])
+
+//Visualizador de las clasificaciones
+var vis_class =  {
+      //'bands': ['classification_2016'],
+      'min': 0,
+      'max': 86,
+      'palette': palette,
+      'format': 'png'
+    }
+
+Map.addLayer(image.select('classification_1985'), vis_class, 'image 1985');
+
+Map.addLayer(filtered2.select('classification_1985'), vis_class, 'filtered 1985');
+Map.addLayer(filtered2.select('classification_2022'), vis_class, 'filtered 2022');
+
+filtered2 = filtered2.set('vesion', '1');
+
+var anos = ['1985','1986','1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998','1999', '2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020', '2021', '2022', '2023', '2024']
+
+
+for (var i_ano=0;i_ano<anos.length; i_ano++){  
+  var ano = anos[i_ano]; 
+  filtered2 = filtered2.addBands(filtered2.select('classification_'+ano).connectedPixelCount(100,false).rename('connect_'+ano))
+}
+
+print(filtered2, 'filtered2')
+
+Export.image.toAsset({
+    'image': filtered2,
+    'description': versionOut,
+    'assetId': dirout + versionOut,
+    'pyramidingPolicy': {
+        '.default': 'mode'
+    },
+    'region': regioesCollection,
+    'scale': 30,
+    'maxPixels': 1e13
+});
+
+
+var limite = regioesCollection
+var blank = ee.Image(0).mask(0);
+var outline = blank.paint(limite, 'AA0000', 2); 
+var visPar = {'palette':'000000','opacity': 0.6};
+Map.addLayer(outline, visPar, 'regioes', false);

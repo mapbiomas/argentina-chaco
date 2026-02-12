@@ -1,0 +1,792 @@
+// MAPBIOMAS Chaco
+// COLLECTION 05 
+// AUTHOR: Sarrailhé, Banchero. Adaptación de script de Schirmbeck
+// 
+//
+//
+//      CAMBIAR VERSION IN ANTES DE CORRER!!!
+//
+//  
+
+var year = 2022 //año de visualización
+var clase_dif = 25
+var leyenda_ndvi = 1 //Para que no se visualice la leyenda y el ndvi poner 0
+
+
+var version = 3
+
+var col = '6'
+var bioma = "Chaco"
+var year_inicio = 1985
+var year_fin = 2024
+var col_arg = '2'
+
+var versionOut = 'col'+ col + '-v' + version + '-Multiples-generales3-' + year_inicio + '-' + year_fin
+//var versionIn = 'col'+ col + '-v' + version + '-1Nat-' + year_inicio + '-' + year_fin +  '-mosaic'
+var versionIn = 'col'+ col + '-v' + version + '-Multiples-generales2-' + year_inicio + '-' + year_fin
+
+var versionIncidentes = year_inicio + '-' + year_fin + '_pre_incidentes_v' + version
+
+var version_hand = '01'
+
+var dir_filtros = 'projects/mapbiomas-argentina/assets/LAND-COVER/COLLECTION-' + col_arg + '/GENERAL/CLASSIFICATION/FILTERS/CHACO/clasificaciones-filtradas/'
+var regioesCollection = ee.FeatureCollection('projects/mapbiomas-chaco/SENTINEL/Limites/Nuevo_Limite_Operativo')
+var raster_zonas = 'projects/mapbiomas-chaco/SENTINEL/Limites/ic-zonas-raster'
+//var image_hand_class = ee.Image('projects/mapbiomas-workspace/AMOSTRAS/col6/PAMPA/class_col6_filtros/classes_hand01')
+var image_hand_class = ee.Image(dir_filtros + 'classes_hand' + version_hand)
+
+
+//Agregado de mosaico
+var mosaics =  ee.ImageCollection("projects/nexgenmap/MapBiomas2/LANDSAT/CHACO/mosaics")
+                 .filterMetadata('version', 'equals', '2')
+                 .filterMetadata('year', 'equals', year)
+
+// Input: Probabilidad de inundable
+var ic_prob = ee.ImageCollection( "projects/mapbiomas-chaco/COLECCION-4/RESULTADOS/ic-probabilidad-area-humeda" );
+var prob_p95 = ic_prob.reduce(ee.Reducer.percentile([95])) 
+
+//Visualizadores
+var RGBvis = {
+        bands: ['swir1_median', 'nir_median', 'red_median'],
+        gain: [0.08, 0.06, 0.2],
+        gamma: 0.85
+    };
+var palette = require('users/mapbiomas/modules:Palettes.js').get('classification9');
+// print(palette)
+palette = palette.concat(["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#a2c830", "#000000", "#000000", "#000000","#000000","#000000", "#690a8f", "#8e9f53", "#ada48e", "#3b33ab"])
+
+//Visualizador de las clasificaciones
+var vis1 =  {
+      //'bands': ['classification_2016'],
+      'min': 0,
+      'max': 86,
+      'palette': palette,
+      'format': 'png',
+      'bands': 'classification_' + year
+
+    }
+//Visualizador de las diferencias
+var vischange = {"min": 0, "max": 3,
+        "palette": "ffffff,ff0000,e6f919,aaaaaa",    //amarelo=e6f919    magenta=bb34c0
+        "format": "png",
+        'bands': 'classification_' + year
+  }
+
+Map.addLayer(mosaics, RGBvis,'mosaico')
+//Map.addLayer(image_in, vis1,'Completo Filtros base')
+
+
+//print(image_in)
+ var moda_vn = function(image_in){
+  var lst = image_in.bandNames().map(function(b){return ee.Image(image_in.select([b])).rename("B").toInt16()})
+  return ee.ImageCollection.fromImages(lst).mode()
+  
+}
+
+
+// Moda de agricultura/pastura
+
+var moda_agr_pas = function(stack){
+  var lst = stack.bandNames().map(function(b){
+    var msk = ee.Image(stack.select([b]))
+    msk = msk.eq(15).or(msk.eq(19)) // 
+    return ee.Image(stack.select([b])).updateMask(msk).rename("B").toInt16()
+  })
+  return ee.ImageCollection.fromImages(lst).mode()
+  
+}
+
+//Moda sin agua ni pz inundable
+var moda_no_inund = function(stack){
+  var lst = stack.bandNames().map(function(b){
+    var msk = ee.Image(stack.select([b]))
+    msk = msk.neq(11).and(msk.neq(33)) // 
+    return ee.Image(stack.select([b])).updateMask(msk).rename("B").toInt16()
+  })
+  return ee.ImageCollection.fromImages(lst).mode()
+  
+}
+
+//Moda sin agua ni pz inundable
+var moda_inund = function(stack){
+  var lst = stack.bandNames().map(function(b){
+    var msk = ee.Image(stack.select([b]))
+    msk = msk.eq(11).or(msk.eq(33)).or(msk.eq(6)) // 
+    return ee.Image(stack.select([b])).updateMask(msk).rename("B").toInt16()
+  })
+  return ee.ImageCollection.fromImages(lst).mode()
+  
+}
+//Map.addLayer(moda,{},"moda", false)
+
+//Script de Juliano que calcula las diferencias
+var diferenca = require('users/MapBiomasAR/coleccion-5:Utils/Mapa_Diferencias.js').diferenca
+
+//Calculando frequencias
+// General rule
+//CON 1985 (85-23)
+var exp = '100*((b( 0)+b( 1)+b( 2)+b( 3)+b( 4)+b( 5)+b( 6)+b( 7)+b( 8)+b( 9)'+
+               '+b(10)+b(11)+b(12)+b(13)+b(14)+b(15)+b(16)+b(17)+b(18)+b(19)'+
+               '+b(20)+b(21)+b(22)+b(23)+b(24)+b(25)+b(26)+b(27)+b(28)+b(29)'+
+               '+b(30)+b(31)+b(32)+b(33)+b(34)+b(35)+b(36)+b(37)+b(38)+b(39))/40)';
+//SIN 1985 (Hasta el 86)
+//var exp = '100*((b( 0)+b( 1)+b( 2)+b( 3)+b( 4)+b( 5)+b( 6)+b( 7)+b( 8)+b( 9)'+
+//               '+b(10)+b(11)+b(12)+b(13)+b(14)+b(15)+b(16)+b(17)+b(18)+b(19)'+
+//               '+b(20)+b(21)+b(22)+b(23)+b(24)+b(25)+b(26)+b(27)+b(28)+b(29)'+
+//               '+b(30)+b(31)+b(32)+b(33)+b(34)+b(35))/36)';
+
+var get_mask = function(año, img, clases){
+    var msk = ee.Image(0)
+    clases.forEach(function(c){
+      msk =   msk.or(img.select("classification_" + año).eq(c))
+    })
+    return msk
+}
+
+
+var regioes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+var years = ee.List.sequence(year_inicio, year_fin,1).getInfo();
+
+var img_desp = null 
+
+for (var i_regiao=0;i_regiao<regioes.length; i_regiao++){
+    var regiao = regioes[i_regiao];
+  
+
+  if (regiao ==  1)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 1, NoVeg_z6: 0, SombrasMont: 1, freqAAPz: 0, freqAnvMos: 1}
+  if (regiao ==  2)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao ==  3)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao ==  4)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 1, SombrasMont: 0, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao ==  5)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao ==  6)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 1, SombrasMont: 1, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao ==  7)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao ==  8)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao ==  9)  var aplicar = {freqPrAnv_z9: 1, Oli6_z11: 0, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao == 10)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao == 11)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 1, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao == 12)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 1, freqAnvMos: 0}
+  if (regiao == 13)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 0, freqAnvMos: 0}
+  if (regiao == 14)  var aplicar = {freqPrAnv_z9: 0, Oli6_z11: 0, NoVeg_z6: 0, SombrasMont: 0, freqAAPz: 1, freqAnvMos: 1}
+
+  var limite = regioesCollection.filterMetadata('zona', 'equals', regiao);
+
+//print(regioesCollection)
+  var image_incidence = ee.Image(dir_filtros + '_Z' + String(regiao) + '_'+ versionIncidentes)
+  var region_raster = ee.Image(raster_zonas+ '/zona_' + regiao)
+//  var image_in = ee.Image(dir_filtros + versionIn).updateMask(region_raster);
+  var image_in = ee.Image(dir_filtros + versionIn + '-z' + regiao ).updateMask(region_raster);
+//  Map.addLayer(image_in,vis1,'Completo Filtros base' + regiao, false)
+
+
+
+//  print(image_incidence)
+  
+  
+//  Map.addLayer(image_in,vis1,'MapBio Temporal_' + regiao, false)
+ // Map.addLayer(image_gap,vis1,'MapBio GAP')
+  
+    
+  // get frequency
+  // Bosque
+  var clase03 = image_in.eq(3).expression(exp) //Cerrado
+  var clase04 = image_in.eq(4).expression(exp) //Abierto
+  var clase06 = image_in.eq(6).expression(exp) //Inundable
+  // Pastizales
+  var clase12 = image_in.eq(12).expression(exp)//
+  var clase11 = image_in.eq(11).expression(exp)//Inundable
+  // Arbustos
+  var clase66 = image_in.eq(66).expression(exp)//Cerrado
+  var clase77 = image_in.eq(77).expression(exp)//Abierto
+  var clase63 = image_in.eq(63).expression(exp)//Disperso
+  // Antrópicas
+  var clase09 = image_in.eq(9).expression(exp) //Plantaciones Forestales
+  var clase15 = image_in.eq(15).expression(exp)//Pastura
+  var clase19 = image_in.eq(19).expression(exp)//Cultivos Anuales
+  var clase47 = image_in.eq(47).expression(exp)//Citrus
+  var clase48 = image_in.eq(48).expression(exp)//Otros Cultivos Perennes
+  var clase83 = image_in.eq(83).expression(exp)//Vid
+  var clase84 = image_in.eq(84).expression(exp)//Olivos
+  var clase85 = image_in.eq(85).expression(exp)//Nogales
+  var clase86 = image_in.eq(86).expression(exp)//Arandano
+  // No vegetada
+  var clase23 = image_in.eq(23).expression(exp)//Playas y Dunas
+  var clase25 = image_in.eq(25).expression(exp)//Otras areas no vegetadas
+  var clase61 = image_in.eq(61).expression(exp)//Salares
+  //Agua
+  var clase33 = image_in.eq(33).expression(exp)
+
+
+ //**********************************************
+  //******** Filtro pr anv zona 9 
+  //**********************************************
+  // ANV en sitios de pastura/pastizal. 
+  //Poner filtro frecuencia que saque anv y ponga pastura
+    
+  if (aplicar.freqPrAnv_z9){
+      var nombre_filtro = 'freqPrAnv_z9'
+      //var moda_no_inund_1 = moda_no_inund(image_in)
+
+      var activacion = ee.Image(0)
+                             .where((clase15.gt(50)
+                             .and((clase12
+                             .add(clase15)
+                             .add(clase25))
+                             .gt(75))),
+                             1).updateMask(region_raster)
+    
+      var  vegMap51 =     
+                    image_in.select("classification_1985").where(activacion.eq(1).and(get_mask(1985, image_in, [25])), 15)
+          .addBands(image_in.select("classification_1986").where(activacion.eq(1).and(get_mask(1986, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1987").where(activacion.eq(1).and(get_mask(1987, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1988").where(activacion.eq(1).and(get_mask(1988, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1989").where(activacion.eq(1).and(get_mask(1989, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1990").where(activacion.eq(1).and(get_mask(1990, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1991").where(activacion.eq(1).and(get_mask(1991, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1992").where(activacion.eq(1).and(get_mask(1992, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1993").where(activacion.eq(1).and(get_mask(1993, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1994").where(activacion.eq(1).and(get_mask(1994, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1995").where(activacion.eq(1).and(get_mask(1995, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1996").where(activacion.eq(1).and(get_mask(1996, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1997").where(activacion.eq(1).and(get_mask(1997, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1998").where(activacion.eq(1).and(get_mask(1998, image_in, [25])), 15))
+          .addBands(image_in.select("classification_1999").where(activacion.eq(1).and(get_mask(1999, image_in, [25])), 15))
+          
+          .addBands(image_in.select("classification_2000").where(activacion.eq(1).and(get_mask(2000, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2001").where(activacion.eq(1).and(get_mask(2001, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2002").where(activacion.eq(1).and(get_mask(2002, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2003").where(activacion.eq(1).and(get_mask(2003, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2004").where(activacion.eq(1).and(get_mask(2004, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2005").where(activacion.eq(1).and(get_mask(2005, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2006").where(activacion.eq(1).and(get_mask(2006, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2007").where(activacion.eq(1).and(get_mask(2007, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2008").where(activacion.eq(1).and(get_mask(2008, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2009").where(activacion.eq(1).and(get_mask(2009, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2010").where(activacion.eq(1).and(get_mask(2010, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2011").where(activacion.eq(1).and(get_mask(2011, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2012").where(activacion.eq(1).and(get_mask(2012, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2013").where(activacion.eq(1).and(get_mask(2013, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2014").where(activacion.eq(1).and(get_mask(2014, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2015").where(activacion.eq(1).and(get_mask(2015, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2016").where(activacion.eq(1).and(get_mask(2016, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2017").where(activacion.eq(1).and(get_mask(2017, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2018").where(activacion.eq(1).and(get_mask(2018, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2019").where(activacion.eq(1).and(get_mask(2019, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2020").where(activacion.eq(1).and(get_mask(2020, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2021").where(activacion.eq(1).and(get_mask(2021, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2022").where(activacion.eq(1).and(get_mask(2022, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2023").where(activacion.eq(1).and(get_mask(2023, image_in, [25])), 15))
+          .addBands(image_in.select("classification_2024").where(activacion.eq(1).and(get_mask(2024, image_in, [25])), 15))
+  
+      vegMap51 = vegMap51.updateMask(vegMap51.neq(0))
+
+      image_in = image_in.where(vegMap51, vegMap51)
+
+      Map.addLayer(image_in,vis1,'Filtro ' + nombre_filtro + ' z' + regiao, false)
+      Map.addLayer(activacion,{min:0, max:1, palette: ["yellow","red"]},'Máscara ' + nombre_filtro + 'z ' + regiao, false)
+    
+  }
+
+         //**********************************************
+  //******** Reras do filtro temporal de 6 años de forestacion
+  //**********************************************
+  // Saca dos años en medio de dos años de forestacion
+    if (aplicar.Oli6_z11){
+      
+     var nom_filtro = 'Oli6_z11'
+            var mask6 = function(valor, ano, imagem){
+              var mask = imagem.select('classification_'+ (parseInt(ano) - 2)).eq (valor)
+                    .and(imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor))
+                    .and(imagem.select('classification_'+ (ano)              ).neq(valor))
+                    .and(imagem.select('classification_'+ (parseInt(ano) + 1)).neq(valor))
+                    .and(imagem.select('classification_'+ (parseInt(ano) + 2)).eq(valor))
+                    .and(imagem.select('classification_'+ (parseInt(ano) + 3)).eq (valor))
+              var muda_img  = imagem.select('classification_'+ (ano)              ).mask(mask.eq(1)).where(mask.eq(1), valor);  
+              var muda_img1 = imagem.select('classification_'+ (parseInt(ano) + 1)).mask(mask.eq(1)).where(mask.eq(1), valor);  
+              var img_out  = imagem.select('classification_'+ ano).blend(muda_img)
+              var img_out1 = imagem.select('classification_'+(parseInt(ano) + 1)).blend(muda_img1)
+              
+              return img_out, img_out1;
+            }
+ 
+        
+        var anos3 = ['1986','1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998', '1999', '2000', '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018', '2019','2020', '2021', '2022', '2023']
+        var anos6 = ['1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998', '1999', '2000', '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017', '2018', '2019', '2020']
+        
+        var window6years = function(imagem, valor){
+           var img_out = imagem.select('classification_1985')
+           var img_out = img_out.addBands(imagem.select('classification_1986'))
+        
+           for (var i_ano=0;i_ano<anos6.length; i_ano++){  
+             var ano = anos6[i_ano];  
+             var bandasFiltradas = imagem.bandNames()
+                  .filter(ee.Filter.neq('item', ('classification_'+ ano)))
+                  .filter(ee.Filter.neq('item', ('classification_'+(parseInt(ano) + 1))))
+                  .filter(ee.Filter.neq('item', 'classification_2021'))
+                  .filter(ee.Filter.neq('item', 'classification_2022'))
+                  .filter(ee.Filter.neq('item', 'classification_2023'))
+                  .filter(ee.Filter.neq('item', 'classification_2024'))
+             var imagemSin = imagem.select(bandasFiltradas)
+  
+              img_out = imagemSin.addBands(mask6(valor,ano, imagem)) 
+              img_out = img_out.select(img_out.bandNames().filter(ee.Filter.neq('item', 'classification_2021')))
+           }
+             img_out = img_out.addBands(imagem.select('classification_2020'))
+             img_out = img_out.addBands(imagem.select('classification_2021'))
+             img_out = img_out.addBands(imagem.select('classification_2022'))
+             img_out = img_out.addBands(imagem.select('classification_2023'))
+             img_out = img_out.addBands(imagem.select('classification_2024'))
+           return img_out
+        }
+
+        
+        //put "classification_2018 in the end of bands after gap fill
+        var original = image_in.select('classification_1985')
+        for (var i_ano=0;i_ano<anos3.length; i_ano++){  
+          var ano = anos3[i_ano]; 
+          original = original.addBands(image_in.select('classification_'+ano)) 
+        }
+        original = original.addBands(image_in.select('classification_2024'))
+        
+        var image_in = original
+        
+        image_in = window6years(image_in, 84)
+
+
+
+    Map.addLayer(image_in,vis1, 'Filtro ' + nom_filtro + 'Z-' + regiao, false)
+
+  //  var clase_dif = 9
+   // var img_dif = diferenca(img_antes,image_in,clase_dif)//.clip(limite)
+  //  Map.addLayer(img_dif.mask(raster_zona),vischange,'Dif filtro For6 clase ' + String(clase_dif), false)
+    
+}
+ 
+        //**********************************************
+  //******** Reras do filtro Temporal de 3 años que saca NoVeg herbaceas
+  //**********************************************
+    if (aplicar.NoVeg_z6){
+      
+     var nom_filtro = 'NoVeg_z6'
+        var mask3 = function(valor1, valor2, valor3, valor4, valor5, ano, imagem){
+      var mask = imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor1).or(imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor2)).or(imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor3)).or(imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor4))
+            .and(imagem.select('classification_'+ (ano)              ).eq(valor5))
+            .and(imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor1).or(imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor2)).or(imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor3)).or(imagem.select('classification_'+ (parseInt(ano) - 1)).eq(valor4)))
+      var valor = imagem.select('classification_'+ (parseInt(ano) - 1))
+      var muda_img = imagem.select('classification_'+ (ano)    ).mask(mask.eq(1)).where(mask.eq(1), valor);  
+      var img_out = imagem.select('classification_'+ano).blend(muda_img)
+      return img_out;
+    }
+    
+    
+    var anos3 = ['1986','1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998', '1999', '2000', '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018', '2019','2020', '2021', '2022', '2023']
+    
+    var window3years = function(imagem, valor1, valor2, valor3, valor4, valor5){
+       var img_out = imagem.select('classification_1985')
+       for (var i_ano=0;i_ano<anos3.length; i_ano++){  
+         var ano = anos3[i_ano];   
+         img_out = img_out.addBands(mask3(valor1, valor2, valor3, valor4, valor5, ano, imagem)) }
+         img_out = img_out.addBands(imagem.select('classification_2024'))
+       return img_out
+    }
+    
+    //put "classification_2018 in the end of bands after gap fill
+    var original = image_in.select('classification_1985')
+    for (var i_ano=0;i_ano<anos3.length; i_ano++){  
+      var ano = anos3[i_ano]; 
+      original = original.addBands(image_in.select('classification_'+ano)) 
+    }
+    original = original.addBands(image_in.select('classification_2024'))
+    
+    var image_in = original
+    
+    
+    image_in = window3years(image_in, 19, 15, 11, 12, 25)
+   // image_in = window3years(image_in, 19, 15, 11, 12, 9)
+    
+    Map.addLayer(image_in,vis1,'Filtro' + nom_filtro + 'Z-' + regiao, false)
+    
+  //  var clase_dif = 9
+  //  var img_dif = diferenca(img_antes,image_in,clase_dif)//.clip(limite)
+  //  Map.addLayer(img_dif.mask(raster_zona),vischange,'Dif filtro Noveg-For clase ' + String(clase_dif), false)
+
+  }
+
+  //image_hand_class
+
+  //**********************************************
+  //******** Filtro de SombrasMont
+  //**********************************************
+  //corrigir agua em sombra de relevo e area umida
+    if (aplicar.SombrasMont){
+    var nombre_filtro = 'SombrasMont'
+      
+    //trabalha com areas com predominância de banhado > 51%  
+    var vegMaskAg = ee.Image(0)
+                             .where((clase33.gt(1))
+                             .and(clase33.lt(95))
+                             .or((clase11.gt(1))
+                             .and(clase11.lt(90)))
+                             .or((clase06.gt(1))
+                             .and(clase06.lt(90)))
+                             .and(image_hand_class.eq(2)),
+                             1)
+                             
+    var moda_n_agua = image_in.updateMask(image_in.neq(33)).reduce(ee.Reducer.mode());                     
+    var moda_n_umi = image_in.updateMask(image_in.neq(11)).reduce(ee.Reducer.mode());                     
+    var moda_n_bumi = image_in.updateMask(image_in.neq(6)).reduce(ee.Reducer.mode());                     
+   
+    var  vegMapAg = vegMaskAg
+  
+    vegMapAg = vegMapAg.updateMask(vegMapAg.neq(0))
+//    Map.addLayer(vegMapAg,vis,'vegMap - Ag', false)
+//    Map.addLayer(vegMaskAg,vis,'vegMask carrosel - Ag', false)
+//    Map.addLayer(image_hand_class,{},'HAND Class', false)
+    image_in = image_in.where(vegMapAg.and(image_in.eq(33)), moda_n_agua)
+    image_in = image_in.where(vegMapAg.and(image_in.eq(11)), moda_n_umi)
+    image_in = image_in.where(vegMapAg.and(image_in.eq(6)), moda_n_bumi)
+
+    Map.addLayer(image_in,vis1,'Filtro' + nombre_filtro, false)
+    //Map.addLayer(image_hand_class)
+  //  var clase_dif = 11
+  //  var img_dif = diferenca(img_antes,image_in,clase_dif)//.clip(limite)
+  //  Map.addLayer(img_dif.mask(region_raster),vischange,'Dif' + nombre_filtro + ' clase ' + String(clase_dif), false)
+
+      
+    }
+
+   //**********************************************
+  //******** filtro de frecuencia pz-aa
+  //**********************************************
+  // estabiliza pz y aa
+  if (aplicar.freqAAPz){
+    var nombre_filtro = 'freqAAPz'  
+    var activacion = ee.Image(0)
+                             .where(clase77.gt(70)
+                             .and((clase12
+                             .add(clase77))
+                             .gt(90))
+                             .and(image_incidence.select('incidence').gt(4)),
+                             1).updateMask(region_raster)
+
+    
+    var  vegMap51 =     
+                    image_in.select("classification_1985").where(activacion.eq(1).and(get_mask(1985, image_in, [12])), 77)
+          .addBands(image_in.select("classification_1986").where(activacion.eq(1).and(get_mask(1986, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1987").where(activacion.eq(1).and(get_mask(1987, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1988").where(activacion.eq(1).and(get_mask(1988, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1989").where(activacion.eq(1).and(get_mask(1989, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1990").where(activacion.eq(1).and(get_mask(1990, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1991").where(activacion.eq(1).and(get_mask(1991, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1992").where(activacion.eq(1).and(get_mask(1992, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1993").where(activacion.eq(1).and(get_mask(1993, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1994").where(activacion.eq(1).and(get_mask(1994, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1995").where(activacion.eq(1).and(get_mask(1995, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1996").where(activacion.eq(1).and(get_mask(1996, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1997").where(activacion.eq(1).and(get_mask(1997, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1998").where(activacion.eq(1).and(get_mask(1998, image_in, [12])), 77))
+          .addBands(image_in.select("classification_1999").where(activacion.eq(1).and(get_mask(1999, image_in, [12])), 77))
+          
+          .addBands(image_in.select("classification_2000").where(activacion.eq(1).and(get_mask(2000, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2001").where(activacion.eq(1).and(get_mask(2001, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2002").where(activacion.eq(1).and(get_mask(2002, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2003").where(activacion.eq(1).and(get_mask(2003, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2004").where(activacion.eq(1).and(get_mask(2004, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2005").where(activacion.eq(1).and(get_mask(2005, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2006").where(activacion.eq(1).and(get_mask(2006, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2007").where(activacion.eq(1).and(get_mask(2007, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2008").where(activacion.eq(1).and(get_mask(2008, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2009").where(activacion.eq(1).and(get_mask(2009, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2010").where(activacion.eq(1).and(get_mask(2010, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2011").where(activacion.eq(1).and(get_mask(2011, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2012").where(activacion.eq(1).and(get_mask(2012, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2013").where(activacion.eq(1).and(get_mask(2013, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2014").where(activacion.eq(1).and(get_mask(2014, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2015").where(activacion.eq(1).and(get_mask(2015, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2016").where(activacion.eq(1).and(get_mask(2016, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2017").where(activacion.eq(1).and(get_mask(2017, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2018").where(activacion.eq(1).and(get_mask(2018, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2019").where(activacion.eq(1).and(get_mask(2019, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2020").where(activacion.eq(1).and(get_mask(2020, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2021").where(activacion.eq(1).and(get_mask(2021, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2022").where(activacion.eq(1).and(get_mask(2022, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2023").where(activacion.eq(1).and(get_mask(2023, image_in, [12])), 77))
+          .addBands(image_in.select("classification_2024").where(activacion.eq(1).and(get_mask(2024, image_in, [12])), 77))
+ 
+
+
+    Map.addLayer(activacion,{min:0, max:1, palette: ["yellow","red"]},'Máscara 1 ' + nombre_filtro + ' z' + regiao, false)
+
+
+    vegMap51 = vegMap51.updateMask(vegMap51.neq(0))
+
+    image_in = image_in.where(vegMap51, vegMap51)
+    
+    var activacion = ee.Image(0)
+                             .where(clase12.gt(70)
+                             .and((clase12
+                             .add(clase77))
+                             .gt(90))
+                             .and(image_incidence.select('incidence').gt(4)),
+                             1).updateMask(region_raster)
+    var  vegMap51 =     
+                    image_in.select("classification_1985").where(activacion.eq(1).and(get_mask(1985, image_in, [77])), 12)
+          .addBands(image_in.select("classification_1986").where(activacion.eq(1).and(get_mask(1986, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1987").where(activacion.eq(1).and(get_mask(1987, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1988").where(activacion.eq(1).and(get_mask(1988, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1989").where(activacion.eq(1).and(get_mask(1989, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1990").where(activacion.eq(1).and(get_mask(1990, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1991").where(activacion.eq(1).and(get_mask(1991, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1992").where(activacion.eq(1).and(get_mask(1992, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1993").where(activacion.eq(1).and(get_mask(1993, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1994").where(activacion.eq(1).and(get_mask(1994, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1995").where(activacion.eq(1).and(get_mask(1995, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1996").where(activacion.eq(1).and(get_mask(1996, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1997").where(activacion.eq(1).and(get_mask(1997, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1998").where(activacion.eq(1).and(get_mask(1998, image_in, [77])), 12))
+          .addBands(image_in.select("classification_1999").where(activacion.eq(1).and(get_mask(1999, image_in, [77])), 12))
+          
+          .addBands(image_in.select("classification_2000").where(activacion.eq(1).and(get_mask(2000, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2001").where(activacion.eq(1).and(get_mask(2001, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2002").where(activacion.eq(1).and(get_mask(2002, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2003").where(activacion.eq(1).and(get_mask(2003, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2004").where(activacion.eq(1).and(get_mask(2004, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2005").where(activacion.eq(1).and(get_mask(2005, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2006").where(activacion.eq(1).and(get_mask(2006, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2007").where(activacion.eq(1).and(get_mask(2007, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2008").where(activacion.eq(1).and(get_mask(2008, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2009").where(activacion.eq(1).and(get_mask(2009, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2010").where(activacion.eq(1).and(get_mask(2010, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2011").where(activacion.eq(1).and(get_mask(2011, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2012").where(activacion.eq(1).and(get_mask(2012, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2013").where(activacion.eq(1).and(get_mask(2013, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2014").where(activacion.eq(1).and(get_mask(2014, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2015").where(activacion.eq(1).and(get_mask(2015, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2016").where(activacion.eq(1).and(get_mask(2016, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2017").where(activacion.eq(1).and(get_mask(2017, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2018").where(activacion.eq(1).and(get_mask(2018, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2019").where(activacion.eq(1).and(get_mask(2019, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2020").where(activacion.eq(1).and(get_mask(2020, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2021").where(activacion.eq(1).and(get_mask(2021, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2022").where(activacion.eq(1).and(get_mask(2022, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2023").where(activacion.eq(1).and(get_mask(2023, image_in, [77])), 12))
+          .addBands(image_in.select("classification_2024").where(activacion.eq(1).and(get_mask(2024, image_in, [77])), 12))
+
+
+    vegMap51 = vegMap51.updateMask(vegMap51.neq(0))
+
+    image_in = image_in.where(vegMap51, vegMap51)
+
+    Map.addLayer(activacion,{min:0, max:1, palette: ["yellow","red"]},'Máscara 2 ' + nombre_filtro + ' z' + regiao, false)
+    Map.addLayer(image_in,vis1,'Filtro ' + nombre_filtro + ' z' + regiao, false)
+  }  
+  
+     //**********************************************
+  //******** filtro de frecuencia 66-23
+  //**********************************************
+  // estabiliza 66 y 23
+  if (aplicar.freqAnvMos){
+    var nombre_filtro = 'freqAnvMos'  
+    var activacion = ee.Image(0)
+                             .where(clase66.gt(70)
+                             .and((clase23
+                             .add(clase66)
+                             .add(clase61))
+                             .gt(90)),
+                             //.and(image_incidence.select('incidence').gt(4)),
+                             1).updateMask(region_raster)
+
+    
+    var  vegMap51 =     
+                    image_in.select("classification_1985").where(activacion.eq(1).and(get_mask(1985, image_in, [23, 61])), 66)
+          .addBands(image_in.select("classification_1986").where(activacion.eq(1).and(get_mask(1986, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1987").where(activacion.eq(1).and(get_mask(1987, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1988").where(activacion.eq(1).and(get_mask(1988, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1989").where(activacion.eq(1).and(get_mask(1989, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1990").where(activacion.eq(1).and(get_mask(1990, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1991").where(activacion.eq(1).and(get_mask(1991, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1992").where(activacion.eq(1).and(get_mask(1992, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1993").where(activacion.eq(1).and(get_mask(1993, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1994").where(activacion.eq(1).and(get_mask(1994, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1995").where(activacion.eq(1).and(get_mask(1995, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1996").where(activacion.eq(1).and(get_mask(1996, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1997").where(activacion.eq(1).and(get_mask(1997, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1998").where(activacion.eq(1).and(get_mask(1998, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_1999").where(activacion.eq(1).and(get_mask(1999, image_in, [23, 61])), 66))
+          
+          .addBands(image_in.select("classification_2000").where(activacion.eq(1).and(get_mask(2000, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2001").where(activacion.eq(1).and(get_mask(2001, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2002").where(activacion.eq(1).and(get_mask(2002, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2003").where(activacion.eq(1).and(get_mask(2003, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2004").where(activacion.eq(1).and(get_mask(2004, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2005").where(activacion.eq(1).and(get_mask(2005, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2006").where(activacion.eq(1).and(get_mask(2006, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2007").where(activacion.eq(1).and(get_mask(2007, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2008").where(activacion.eq(1).and(get_mask(2008, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2009").where(activacion.eq(1).and(get_mask(2009, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2010").where(activacion.eq(1).and(get_mask(2010, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2011").where(activacion.eq(1).and(get_mask(2011, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2012").where(activacion.eq(1).and(get_mask(2012, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2013").where(activacion.eq(1).and(get_mask(2013, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2014").where(activacion.eq(1).and(get_mask(2014, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2015").where(activacion.eq(1).and(get_mask(2015, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2016").where(activacion.eq(1).and(get_mask(2016, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2017").where(activacion.eq(1).and(get_mask(2017, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2018").where(activacion.eq(1).and(get_mask(2018, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2019").where(activacion.eq(1).and(get_mask(2019, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2020").where(activacion.eq(1).and(get_mask(2020, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2021").where(activacion.eq(1).and(get_mask(2021, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2022").where(activacion.eq(1).and(get_mask(2022, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2023").where(activacion.eq(1).and(get_mask(2023, image_in, [23, 61])), 66))
+          .addBands(image_in.select("classification_2024").where(activacion.eq(1).and(get_mask(2024, image_in, [23, 61])), 66))
+ 
+
+
+    Map.addLayer(activacion,{min:0, max:1, palette: ["yellow","red"]},'Máscara 1 ' + nombre_filtro + ' z' + regiao, false)
+
+
+    vegMap51 = vegMap51.updateMask(vegMap51.neq(0))
+
+    image_in = image_in.where(vegMap51, vegMap51)
+    
+    var activacion = ee.Image(0)
+                             .where(clase23.gt(70)
+                             .and((clase66
+                             .add(clase23))
+                             .gt(90))
+                             .and(image_incidence.select('incidence').gt(4)),
+                             1).updateMask(region_raster)
+    var  vegMap51 =     
+                    image_in.select("classification_1985").where(activacion.eq(1).and(get_mask(1985, image_in, [66, 61])), 23)
+          .addBands(image_in.select("classification_1986").where(activacion.eq(1).and(get_mask(1986, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1987").where(activacion.eq(1).and(get_mask(1987, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1988").where(activacion.eq(1).and(get_mask(1988, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1989").where(activacion.eq(1).and(get_mask(1989, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1990").where(activacion.eq(1).and(get_mask(1990, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1991").where(activacion.eq(1).and(get_mask(1991, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1992").where(activacion.eq(1).and(get_mask(1992, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1993").where(activacion.eq(1).and(get_mask(1993, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1994").where(activacion.eq(1).and(get_mask(1994, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1995").where(activacion.eq(1).and(get_mask(1995, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1996").where(activacion.eq(1).and(get_mask(1996, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1997").where(activacion.eq(1).and(get_mask(1997, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1998").where(activacion.eq(1).and(get_mask(1998, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_1999").where(activacion.eq(1).and(get_mask(1999, image_in, [66, 61])), 23))
+          
+          .addBands(image_in.select("classification_2000").where(activacion.eq(1).and(get_mask(2000, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2001").where(activacion.eq(1).and(get_mask(2001, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2002").where(activacion.eq(1).and(get_mask(2002, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2003").where(activacion.eq(1).and(get_mask(2003, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2004").where(activacion.eq(1).and(get_mask(2004, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2005").where(activacion.eq(1).and(get_mask(2005, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2006").where(activacion.eq(1).and(get_mask(2006, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2007").where(activacion.eq(1).and(get_mask(2007, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2008").where(activacion.eq(1).and(get_mask(2008, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2009").where(activacion.eq(1).and(get_mask(2009, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2010").where(activacion.eq(1).and(get_mask(2010, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2011").where(activacion.eq(1).and(get_mask(2011, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2012").where(activacion.eq(1).and(get_mask(2012, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2013").where(activacion.eq(1).and(get_mask(2013, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2014").where(activacion.eq(1).and(get_mask(2014, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2015").where(activacion.eq(1).and(get_mask(2015, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2016").where(activacion.eq(1).and(get_mask(2016, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2017").where(activacion.eq(1).and(get_mask(2017, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2018").where(activacion.eq(1).and(get_mask(2018, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2019").where(activacion.eq(1).and(get_mask(2019, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2020").where(activacion.eq(1).and(get_mask(2020, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2021").where(activacion.eq(1).and(get_mask(2021, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2022").where(activacion.eq(1).and(get_mask(2022, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2023").where(activacion.eq(1).and(get_mask(2023, image_in, [66, 61])), 23))
+          .addBands(image_in.select("classification_2024").where(activacion.eq(1).and(get_mask(2024, image_in, [66, 61])), 23))
+
+
+    vegMap51 = vegMap51.updateMask(vegMap51.neq(0))
+
+    image_in = image_in.where(vegMap51, vegMap51)
+
+    Map.addLayer(activacion,{min:0, max:1, palette: ["yellow","red"]},'Máscara 2 ' + nombre_filtro + ' z' + regiao, false)
+    Map.addLayer(image_in,vis1,'Filtro ' + nombre_filtro + ' z' + regiao, false)
+  }
+  
+  var image_out = image_in
+  
+//  image_out = image_out
+//    .set('collection', col)
+//    .set('version', versionOut)
+//    .set('biome', bioma)
+//  
+//  //print(image_in)
+
+image_out = image_out.set({
+   "version": versionOut,
+    "versionIn": versionIn,
+    yearStart: year_inicio,
+    yearEnd: year_fin,
+    zona: regiao,
+    type: "Frequency filter",
+    project: "MapBiomas Chaco"
+})
+//  print(regiao, 'image out')
+
+  img_desp = img_desp === null?img_desp=image_out:img_desp=ee.ImageCollection([img_desp,image_out]).min();
+  Export.image.toAsset({
+      'image': image_out,
+      'description': versionOut + '-z' + regiao,
+      'assetId': dir_filtros + versionOut + '-z' + regiao,
+      'pyramidingPolicy': {
+          '.default': 'mode'
+      },
+      'region': regioesCollection,
+      'scale': 30,
+      'maxPixels': 1e13
+  });
+
+
+}
+//var img_antes = ee.Image(dir_filtros + versionIn )
+//var img_dif = diferenca(img_antes.select('classification_'+ year),image_out.select('classification_'+ year),clase_dif)//.clip(limite)
+//var img_dif = diferenca(img_antes, img_desp, clase_dif)//.clip(limite)
+//Map.addLayer(img_dif, vischange,'Dif filtros clase  ' + String(clase_dif), false)
+//Map.addLayer(img_antes, vis1,'Completo Filtros base')
+Map.addLayer(img_desp, vis1,'Completo Filtros Final')
+
+if (leyenda_ndvi == 1){
+var utils = require("users/MapBiomasAR/coleccion-6:Utils/getlegend_Chaco_c6")
+var ts_tools = require("users/MapBiomasAR/coleccion-4:Utils/time_series.js")
+var panel = null;
+var chk_refresh_plot_flag = null;
+var get_panel_chart_ts = function(){
+  
+Map.onClick(function(point){
+    var punto = ee.Geometry.Point([point["lon"], point["lat"]]);
+    
+    if(chk_refresh_plot_flag.getValue()){
+      panel.remove(panel.widgets().get(1))
+      panel.insert(1,ts_tools.get_time_serie_plot(punto));
+      
+    }
+    
+  });
+  
+  chk_refresh_plot_flag = ui.Checkbox("¿Actualizar serie?")
+  
+  var panel = ui.Panel({
+    widgets: [chk_refresh_plot_flag],
+    layout: ui.Panel.Layout.Flow('vertical')
+  })
+  return panel
+}
+panel = ui.Panel({
+  widgets: [utils.get_legend("Clases MB Chaco"),
+  get_panel_chart_ts()]
+  
+})
+ui.root.add(panel)
+}
+
+
+
+
+//      var thr_proba = 0.5;
+//      var msk_proba = prob_p95.gte(thr_proba);
+//Map.addLayer(msk_proba, {min:0, max:1, palette: ["white","red"]},"P > " + thr_proba + ' ' + regiao, false)     
